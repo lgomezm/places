@@ -1,28 +1,43 @@
 package main
 
-import "errors"
+import (
+	"github.com/jinzhu/gorm"
+)
 
 type place struct {
-	ID          int    `json:"id"`
+	gorm.Model
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
-var placeList = []place{
-	place{ID: 1, Name: "House 1", Description: "Nice house"},
-	place{ID: 2, Name: "Apartment 1", Description: "Comfortable apt"},
-	place{ID: 3, Name: "House 2", Description: "Big house"},
-}
-
 func getAllPlaces() []place {
-	return placeList
+	var places []place
+	db.Find(&places)
+	return places
 }
 
-func getPlaceByID(placeID int) (*place, error) {
-	for _, p := range placeList {
-		if p.ID == placeID {
-			return &p, nil
-		}
+func getPlaceByID(placeID int) place {
+	var p place
+	db.First(&p, placeID)
+	return p
+}
+
+func createPlace(p place) place {
+	db.Create(&p)
+	return p
+}
+
+func updatePlace(p place) place {
+	db.Model(&p).Updates(place{Name: p.Name, Description: p.Description})
+	return p
+}
+
+func softDeletePlace(placeID int) bool {
+	var p place
+	db.First(&p, placeID)
+	if p.ID > 0 {
+		db.Delete(&p)
+		return true
 	}
-	return nil, errors.New("Place not found")
+	return false
 }

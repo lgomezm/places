@@ -13,10 +13,38 @@ func getPlaces(c *gin.Context) {
 
 func getPlace(c *gin.Context) {
 	if placeID, err := strconv.Atoi(c.Param("place_id")); err == nil {
-		if place, err := getPlaceByID(placeID); err == nil {
+		place := getPlaceByID(placeID)
+		if place.ID > 0 {
 			c.JSON(http.StatusOK, place)
 		} else {
-			c.AbortWithError(http.StatusNotFound, err)
+			c.AbortWithStatus(http.StatusNotFound)
+		}
+	} else {
+		c.AbortWithStatus(http.StatusNotFound)
+	}
+}
+
+func postPlace(c *gin.Context) {
+	var p place
+	c.BindJSON(&p)
+	p = createPlace(p)
+	c.JSON(http.StatusOK, p)
+}
+
+func putPlace(c *gin.Context) {
+	var p place
+	c.BindJSON(&p)
+	p = updatePlace(p)
+	c.JSON(http.StatusOK, p)
+}
+
+func deletePlace(c *gin.Context) {
+	if placeID, err := strconv.Atoi(c.Param("place_id")); err == nil {
+		deleted := softDeletePlace(placeID)
+		if deleted {
+			c.String(http.StatusNoContent, "")
+		} else {
+			c.AbortWithStatus(http.StatusNotFound)
 		}
 	} else {
 		c.AbortWithStatus(http.StatusNotFound)
