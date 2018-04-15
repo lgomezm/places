@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -19,9 +20,12 @@ func main() {
 	}
 	defer db.Close()
 
+	db.AutoMigrate(&user{})
 	db.AutoMigrate(&place{})
 
 	router = gin.Default()
+	store := sessions.NewCookieStore([]byte("secret"))
+	router.Use(sessions.Sessions("mysession", store))
 	initializeRoutes()
 	router.Run()
 }

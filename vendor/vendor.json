@@ -13,6 +13,12 @@
 			"revision": ""
 		},
 		{
+			"checksumSHA1": "CLiBQj4s1rxRB/UfObJdDTP+hDo=",
+			"path": "github.com/boj/redistore",
+			"revision": "4562487a4bee9a7c272b72bfaeda4917d0a47ab9",
+			"revisionTime": "2017-04-19T03:05:11Z"
+		},
+		{
 			"checksumSHA1": "3KhDEC5MM0iyN+FsLfxpnvFVeuY=",
 			"path": "github.com/davecgh/go-spew/spew",
 			"revision": "8991bc29aa16c548c550c7ff78260e27b9ab7c73",
@@ -43,10 +49,28 @@
 			"revisionTime": "2016-02-19T21:45:06Z"
 		},
 		{
+			"checksumSHA1": "CugKDIiTN7Xl2ID3yQ17ytRmNOY=",
+			"path": "github.com/garyburd/redigo/internal",
+			"revision": "569eae59ada904ea8db7a225c2b47165af08735a",
+			"revisionTime": "2018-04-04T16:07:26Z"
+		},
+		{
+			"checksumSHA1": "DsobywS3zeHUgxjSOCUt4SLS2ik=",
+			"path": "github.com/garyburd/redigo/redis",
+			"revision": "569eae59ada904ea8db7a225c2b47165af08735a",
+			"revisionTime": "2018-04-04T16:07:26Z"
+		},
+		{
 			"checksumSHA1": "Cmfv2KnhEhnmmdn0gZDDTH3BZxM=",
 			"path": "github.com/gin-contrib/sse",
 			"revision": "22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae",
 			"revisionTime": "2017-01-09T09:34:21Z"
+		},
+		{
+			"checksumSHA1": "qEMdeb4XqjgutyNFYu++2+L+2D8=",
+			"path": "github.com/gin-gonic/contrib/sessions",
+			"revision": "9b830a15f6abcf9e160f47ee01fc00691cc1981a",
+			"revisionTime": "2018-03-20T08:42:56Z"
 		},
 		{
 			"checksumSHA1": "LMTVdxboFzFLQ72VDLchWv/PG4o=",
@@ -131,6 +155,24 @@
 			"path": "github.com/golang/protobuf/ptypes/timestamp",
 			"revision": "e09c5db296004fbe3f74490e84dcd62c3c5ddb1b",
 			"revisionTime": "2018-03-28T16:31:53Z"
+		},
+		{
+			"checksumSHA1": "Thg9sicXr23/02y0VqmmJoEZIzI=",
+			"path": "github.com/gorilla/context",
+			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
+			"revisionTime": "2016-08-17T18:46:32Z"
+		},
+		{
+			"checksumSHA1": "Ij5Z+koMayNWjXZAJM3PY9RENXA=",
+			"path": "github.com/gorilla/securecookie",
+			"revision": "e59506cc896acb7f7bf732d4fdf5e25f7ccd8983",
+			"revisionTime": "2017-02-24T19:38:04Z"
+		},
+		{
+			"checksumSHA1": "tkjO/L7bmb/biMQnTPFYeZBq6zs=",
+			"path": "github.com/gorilla/sessions",
+			"revision": "a2f2a3de9a4a575047f73e3e36bc85ecc3546391",
+			"revisionTime": "2018-03-21T16:38:55Z"
 		},
 		{
 			"checksumSHA1": "YgmAKa/A6esyKj8asZLCMhD9ubA=",
