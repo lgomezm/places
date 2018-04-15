@@ -4,8 +4,9 @@ import "github.com/jinzhu/gorm"
 
 type place struct {
 	gorm.Model
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Area        float32 `json:"area"`
 }
 
 func getAllPlaces() []place {
@@ -26,7 +27,7 @@ func createPlace(p place) place {
 }
 
 func updatePlace(p place) place {
-	db.Model(&p).Updates(place{Name: p.Name, Description: p.Description})
+	db.Model(&p).Updates(place{Name: p.Name, Description: p.Description, Area: p.Area})
 	return p
 }
 
