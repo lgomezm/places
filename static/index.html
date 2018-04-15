@@ -4,7 +4,7 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">    
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
-    <body>
+    <body ng-app="PlacesApp">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <a class="navbar-brand" href="#">La Corte</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,29 +34,9 @@
                 <p><a class="btn btn-primary btn-lg" href="#" role="button">Buscar</a></p>
             </div>
         </section>
-        <div class="album py-5 bg-light">
-        <div ng-controller="PlacesController" class="container">
-            <div class="row" ng-repeat="row in places">
-                <div class="col-sm-4" ng-repeat="p in row">
-                    <div class="card mb-4 box-shadow">
-                        <img src="house.jpg" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <p class="h3 float-right">
-                                <span class="badge badge-success">{{ p.area }} m<sup>2</sup></span>
-                            </p>
-                            <h3>{{ p.name }}</h2>
-                            <p class="card-text">{{ p.description }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
+        <div ng-view></div>
         <footer class="text-muted py-5">
             <div class="container">
-                <p class="float-right">
-                    <a href="#">Arriba</a>
-                </p>
                 <p>La Corte Soluciones Inmobiliarias</p>
                 <p>Desarrollado por Luis Gomez</p>
             </div>
@@ -68,5 +48,6 @@
 
     <script src="http://code.angularjs.org/1.6.4/angular.min.js"></script>
     <script src="http://code.angularjs.org/1.6.4/angular-resource.min.js"></script>
-    <script src="js/controller.js"></script>
+    <script src="http://code.angularjs.org/1.6.4/angular-route.min.js"></script>
+    <script src="js/app.js"></script>
 </html>
