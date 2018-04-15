@@ -24,6 +24,7 @@ func main() {
 	db.AutoMigrate(&place{})
 
 	router = gin.Default()
+	router.Static("/static", "static")
 	store := sessions.NewCookieStore([]byte("secret"))
 	router.Use(sessions.Sessions("mysession", store))
 	initializeRoutes()

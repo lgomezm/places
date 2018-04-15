@@ -7,6 +7,7 @@ import (
 )
 
 func initializeRoutes() {
+	router.GET("/", index)
 	router.POST("/login", login)
 	router.POST("/logout", logout)
 
@@ -22,6 +23,10 @@ func initializeRoutes() {
 	private.Use(authRequired)
 	private.GET("/", private1)
 	private.GET("/two", private2)
+}
+
+func index(c *gin.Context) {
+	c.Redirect(http.StatusMovedPermanently, "static/index.html")
 }
 
 func private1(c *gin.Context) {
