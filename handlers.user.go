@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/golang/crypto/bcrypt"
 )
 
 func postUser(c *gin.Context) {

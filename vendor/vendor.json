@@ -109,6 +109,12 @@
 			"revisionTime": "2018-04-13T18:15:57Z"
 		},
 		{
+			"checksumSHA1": "yJhaewvuLTOKRIRFgVrijjIqiTQ=",
+			"path": "github.com/golang/crypto/bcrypt",
+			"revision": "d6449816ce06963d9d136eee5a56fca5b0616e7e",
+			"revisionTime": "2018-04-11T15:42:50Z"
+		},
+		{
 			"checksumSHA1": "fbMBM0Rh4fH554O3fDMvXT5jnwo=",
 			"path": "github.com/golang/protobuf/proto",
 			"revision": "e09c5db296004fbe3f74490e84dcd62c3c5ddb1b",
@@ -287,6 +293,12 @@
 			"path": "github.com/ugorji/go/codec",
 			"revision": "f3cacc17c85ecb7f1b6a9e373ee85d1480919868",
 			"revisionTime": "2018-04-07T10:30:00Z"
+		},
+		{
+			"checksumSHA1": "xPfwt1dqdvXLKVesMfw+qcuCNfs=",
+			"path": "golang.org/x/crypto/blowfish",
+			"revision": "d6449816ce06963d9d136eee5a56fca5b0616e7e",
+			"revisionTime": "2018-04-11T15:42:50Z"
 		},
 		{
 			"checksumSHA1": "c7U2W5dC+nzbOXafb0Ysl8PJ6og=",
