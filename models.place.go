@@ -48,7 +48,7 @@ func getPlacesBy(placeType string, purpose string,
 		q = q.Where("price <= ?", maxPrice)
 	}
 	if rooms > 0 {
-		q = q.Where("rooms >= ?", rooms)
+		q = q.Where("bedrooms >= ?", rooms)
 	}
 	if floor > 0 {
 		q = q.Where("floor >= ?", floor)

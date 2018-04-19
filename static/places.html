@@ -1,18 +1,5 @@
 <div class="album py-5 bg-light">
-<div ng-controller="PlacesController" class="container">
-    <div class="row" ng-repeat="row in places">
-        <div class="col-sm-4" ng-repeat="p in row">
-            <div class="card mb-4 box-shadow">
-                <a ng-click="showPlace(p.ID)"><img src="house.jpg" class="card-img-top" alt="..."></a>
-                <div class="card-body">
-                    <p class="h3 float-right">
-                        <span class="badge badge-success">{{ p.area }} m<sup>2</sup></span>
-                    </p>
-                    <h3>{{ p.name }}</h2>
-                    <p class="card-text">{{ p.description }}</p>
-                </div>
-            </div>
-        </div>
+    <div ng-controller="PlacesController" class="container">
+        <div ng-include="'place-cards.html'"></div>
     </div>
-</div>
 </div>

@@ -1,0 +1,85 @@
+<div ng-controller="PlaceSearchController" class="container">
+    <form>
+        <div class="container">
+            <div class="row">
+                <div class="form-group col-sm-2">
+                    <label for="purpose">Inmueble en</label>
+                    <select class="form-control" id="purpose">
+                        <option value="all">Todos</option>
+                        <option value="sale">Venta</option>
+                        <option value="rent">Arriendo</option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-3">
+                    <label for="type">Tipo</label>
+                    <select class="form-control" id="type">
+                        <option value="all">Todos</option>
+                        <option value="apt-studio">Aparta-estudio</option>
+                        <option value="aptartment">Apartamento</option>
+                        <option value="house">Casa</option>
+                        <option value="farm">Finca</option>
+                        <option value="shop">Local</option>
+                        <option value="warehouse">Bodega</option>
+                        <option value="allotment">Lote</option>
+                        <option value="office">Oficina</option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-3">
+                    <label for="location">Ubicación</label>
+                    <select class="form-control" id="location">
+                        <option value="all">Todas</option>
+                        <option>Caldas</option>
+                        <option>Amagá</option>
+                        <option>La Estrella</option>
+                        <option>Sabaneta</option>
+                        <option>Itagüí</option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label for="rooms">Habitaciones</label>
+                    <select class="form-control" id="rooms">
+                        <option value="1">1+</option>
+                        <option value="2">2+</option>
+                        <option value="3">3+</option>
+                        <option value="4">4+</option>
+                        <option value="5">5+</option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-2">
+                    <label for="floor">Piso</label>
+                    <select class="form-control" id="floor">
+                        <option value="0">1+</option>
+                        <option value="2">2+</option>
+                        <option value="3">3+</option>
+                        <option value="4">4+</option>
+                        <option value="5">5+</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-2">
+                    <label for="minArea">Área mínima</label>
+                    <input type="number" class="form-control" id="minArea" placeholder="Área mínima">
+                </div>
+                <div class="form-group col-sm-2">
+                    <label for="maxArea">Área máxima</label>
+                    <input type="number" class="form-control" id="maxArea" placeholder="Área máxima">
+                </div>
+                <div class="form-group col-sm-3">
+                    <label for="minPrice">Precio mínimo</label>
+                    <input type="number" class="form-control" id="minPrice" placeholder="Precio mínimo">
+                </div>
+                <div class="form-group col-sm-3">
+                    <label for="maxPrice">Precio máximo</label>
+                    <input type="number" class="form-control" id="maxPrice" placeholder="Precio máximo">
+                </div>
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-primary" ng-click="search()">Buscar</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="album py-5 bg-light">
+        <div ng-include="'place-cards.html'"></div>
+    </div>
+</div>
