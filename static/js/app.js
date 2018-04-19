@@ -2,23 +2,31 @@ var app = angular.module("PlacesApp", ["ngResource", "ngRoute"]);
 app.config(function($routeProvider) {
     $routeProvider
     .when("/", {
-        templateUrl : "places.html",
-        controller: "PlacesController"
+        templateUrl : "views/home.htm",
+        controller: "HomeController"
     })
     .when("/places", {
-        templateUrl : "places.html",
-        controller: "PlacesController"
+        templateUrl : "views/home.htm",
+        controller: "HomeController"
     })
     .when('/places/:placeId', {
-        templateUrl: 'place-detail.html',
+        templateUrl: 'views/place-detail.htm',
         controller: "PlaceDetailController"
     })
     .when('/search', {
-        templateUrl: 'place-search.html',
+        templateUrl: 'views/place-search.htm',
         controller: "PlaceSearchController"
+    })
+    .when('/login', {
+        templateUrl: 'views/login.htm',
+        controller: "LoginController"
+    })
+    .when('/admin', {
+        templateUrl: 'views/admin.htm',
+        controller: "AdminController"
     });
 });
-app.controller('PlacesController', function($scope, $resource, $location) {
+app.controller('HomeController', function($scope, $resource, $location) {
     var Place = $resource("../places", {}, {});
     $scope.list = function(){
         Place.query(function(data){
@@ -87,6 +95,38 @@ app.controller('PlaceSearchController', function($scope, $http, $location) {
     $scope.showPlace = function(id) {
         $location.path("/places/" + id);
     };
+});
+app.controller('LoginController', function($scope, $http, $location) {
+    $("#password").keypress(function(event) {
+        if (event.which == 13) {
+            $scope.login();
+        }
+    });
+    $scope.login = function() {
+        $http({
+            method: 'POST',
+            url: '../login',
+            data: {
+                username: getTextValue($("#username")),
+                password: getTextValue($("#password"))
+            }
+          }).then(function successCallback(response) {
+              $location.path("/admin");
+          }, function errorCallback(response) {
+              alert(response.data);
+          });
+    };
+});
+
+app.controller('AdminController', function($scope, $http, $location) {
+    $scope.isLoggedIn = function() {
+        $http.get('../logged-in')
+            .then(function successCallback(response) {}, 
+                function errorCallback(response) {
+                    $location.path("/login");
+                });
+    };
+    $scope.isLoggedIn();
 });
 
 function getTextValue(textInput) {

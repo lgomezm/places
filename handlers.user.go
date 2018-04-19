@@ -30,20 +30,19 @@ func postUser(c *gin.Context) {
 
 func login(c *gin.Context) {
 	session := sessions.Default(c)
-	username := c.PostForm("username")
-	password := c.PostForm("password")
-
-	if strings.Trim(username, " ") == "" || strings.Trim(password, " ") == "" {
+	var params map[string]string
+	c.BindJSON(&params)
+	if strings.Trim(params["username"], " ") == "" || strings.Trim(params["password"], " ") == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Parameters can't be empty"})
 		return
 	}
-	u := auth(username)
-	if u.UserName != username {
+	u := auth(params["username"])
+	if u.UserName != params["username"] {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "User does not exist"})
 	}
-	err := bcrypt.CompareHashAndPassword([]byte(u.PasswordDigest), []byte(password))
+	err := bcrypt.CompareHashAndPassword([]byte(u.PasswordDigest), []byte(params["password"]))
 	if err == nil {
-		session.Set("user", username)
+		session.Set("user", params["username"])
 		err := session.Save()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate session token"})
@@ -53,6 +52,16 @@ func login(c *gin.Context) {
 	} else {
 		fmt.Println("Passwords don't match", err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication failed"})
+	}
+}
+
+func isLoggedIn(c *gin.Context) {
+	session := sessions.Default(c)
+	user := session.Get("user")
+	if user == nil {
+		c.Status(http.StatusUnauthorized)
+	} else {
+		c.Status(http.StatusOK)
 	}
 }
 

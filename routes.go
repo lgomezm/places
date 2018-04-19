@@ -9,6 +9,7 @@ import (
 func initializeRoutes() {
 	router.GET("/", index)
 	router.POST("/login", login)
+	router.GET("/logged-in", isLoggedIn)
 	router.POST("/logout", logout)
 
 	router.POST("/users", postUser)
