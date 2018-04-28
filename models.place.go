@@ -17,11 +17,18 @@ type place struct {
 	Bedrooms    uint    `json:"bedrooms"`
 	Bathrooms   uint    `json:"bathrooms"`
 	Stratum     uint    `json:"stratum"`
-	Parking     bool    `json:"parking"`
+	Parking     uint    `json:"parking"`
 	Price       int64   `json:"price"`
 	Location    string  `json:"location"`
 	Latitude    float64 `json:"latitude"`
 	Longitude   float64 `json:"longitude"`
+	Photos      []photo `json:"photos"`
+}
+
+type photo struct {
+	gorm.Model
+	URL     string `json:"url" gorm:"not null"`
+	PlaceID uint   `json:"place_id"`
 }
 
 func getPlacesBy(placeType string, purpose string,
@@ -63,7 +70,10 @@ func getPlacesBy(placeType string, purpose string,
 
 func getPlaceByID(placeID int) place {
 	var p place
+	var photos []photo
 	db.First(&p, placeID)
+	db.Model(&p).Related(&photos)
+	p.Photos = photos
 	return p
 }
 
@@ -101,4 +111,9 @@ func softDeletePlace(placeID int) bool {
 		return true
 	}
 	return false
+}
+
+func createPhoto(p photo) photo {
+	db.Create(&p)
+	return p
 }

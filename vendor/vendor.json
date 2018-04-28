@@ -571,6 +571,12 @@
 			"revisionTime": "2016-01-10T10:55:54Z"
 		},
 		{
+			"checksumSHA1": "QSFMbrLU8g5wr7UviJ0IwjQy/ds=",
+			"path": "github.com/satori/go.uuid",
+			"revision": "36e9d2ebbde5e3f13ab2e25625fd453271d6522e",
+			"revisionTime": "2018-01-03T17:44:51Z"
+		},
+		{
 			"checksumSHA1": "VfPvVlMjS7U7FptdcQJGT+oDyHg=",
 			"path": "github.com/smartystreets/assertions",
 			"revision": "7678a5452ebea5b7090a6b163f844c133f523da2",
@@ -779,6 +785,24 @@
 			"path": "gopkg.in/go-playground/validator.v8",
 			"revision": "5f1438d3fca68893a817e4a66806cea46a9e4ebf",
 			"revisionTime": "2017-07-30T05:02:35Z"
+		},
+		{
+			"checksumSHA1": "IcGZlblAAa0Snx5rqO4AFKYQ65I=",
+			"path": "gopkg.in/h2non/filetype.v1",
+			"revision": "cc14fdc9ca0e4c2bafad7458f6ff79fd3947cfbb",
+			"revisionTime": "2017-12-12T22:16:18Z"
+		},
+		{
+			"checksumSHA1": "lfg41Y3f72CFZuo6sCSH5cFcZd0=",
+			"path": "gopkg.in/h2non/filetype.v1/matchers",
+			"revision": "cc14fdc9ca0e4c2bafad7458f6ff79fd3947cfbb",
+			"revisionTime": "2017-12-12T22:16:18Z"
+		},
+		{
+			"checksumSHA1": "O3e6hsB2RH5FpnDxdau1b/BEfbs=",
+			"path": "gopkg.in/h2non/filetype.v1/types",
+			"revision": "cc14fdc9ca0e4c2bafad7458f6ff79fd3947cfbb",
+			"revisionTime": "2017-12-12T22:16:18Z"
 		},
 		{
 			"checksumSHA1": "QbBpGo3JtWOoaonrwtYbqtK4Rsc=",
