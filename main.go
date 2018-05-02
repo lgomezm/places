@@ -22,6 +22,7 @@ func main() {
 
 	db.AutoMigrate(&user{})
 	db.AutoMigrate(&place{})
+	db.AutoMigrate(&purpose{})
 	db.AutoMigrate(&photo{})
 
 	router = gin.Default()
