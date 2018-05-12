@@ -9,6 +9,10 @@ app.config(function($routeProvider) {
         templateUrl : "views/home.htm",
         controller: "HomeController"
     })
+    .when('/places/create', {
+        templateUrl: 'views/place-create.htm',
+        controller: "CreatePlaceController"
+    })
     .when('/places/:placeId', {
         templateUrl: 'views/place-detail.htm',
         controller: "PlaceDetailController"
@@ -126,6 +130,26 @@ app.controller('AdminController', function($scope, $http, $location) {
                     $location.path("/login");
                 });
     };
+    $scope.isLoggedIn();
+});
+
+app.controller('CreatePlaceController', function($scope, $http, $location) {
+    $scope.isLoggedIn = function() {
+        $http.get('../logged-in')
+            .then(function successCallback(response) {}, 
+                function errorCallback(response) {
+                    $location.path("/login");
+                });
+    };
+    $scope.create = function() {
+        
+    };
+    $('#saleCheckbox').change(function() {
+        $("#salePrice").prop('readonly', !this.checked);
+    });
+    $('#rentCheckbox').change(function() {
+        $("#rentPrice").prop('readonly', !this.checked);
+    });
     $scope.isLoggedIn();
 });
 

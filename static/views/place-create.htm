@@ -1,0 +1,86 @@
+<div ng-include="'views/admin-navbar.htm'"></div>
+<div ng-controller="CreatePlaceController" class="container">
+    <form>
+        <div class="row">
+            <div class="form-group col-sm-8">
+                <label for="placeName">Nombre</label>
+                <input type="text" class="form-control" id="placeName" placeholder="Nombre del inmueble">
+            </div>
+            <div class="form-group col-sm-4">
+                <label for="type">Tipo</label>
+                <select class="form-control" id="type">
+                    <option value="0">--Seleccione--</option>
+                    <option value="apt-studio">Aparta-estudio</option>
+                    <option value="aptartment">Apartamento</option>
+                    <option value="house">Casa</option>
+                    <option value="farm">Finca</option>
+                    <option value="shop">Local</option>
+                    <option value="warehouse">Bodega</option>
+                    <option value="allotment">Lote</option>
+                    <option value="office">Oficina</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-12">
+                <label for="placeDesc">Descripción</label>
+                <textarea class="form-control" id="placeDesc" rows="3"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-3">
+                <label for="placeArea">Área</label>
+                <input type="number" class="form-control" id="placeArea" placeholder="Área">
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="floor">Piso</label>
+                <input type="number" class="form-control" id="floor" placeholder="Piso">
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="bathrooms">Baños</label>
+                <input type="number" class="form-control" id="bathrooms" placeholder="Baños">
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="bedrooms">Habitaciones</label>
+                <input type="number" class="form-control" id="bedrooms" placeholder="Habitaciones">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-3">
+                <label for="stratum">Estrato</label>
+                <select class="form-control" id="stratum">
+                    <option value="0">--Seleccione--</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+            </div>
+            <div class="form-group col-sm-3">
+                <label for="parking">Parqueaderos</label>
+                <input type="number" class="form-control" id="parking" placeholder="Parqueaderos">
+            </div>
+            <div class="form-group col-sm-3">
+                <div class="form-check form-check-inline" style="margin-bottom: 8px">
+                    <input class="form-check-input" type="checkbox" id="saleCheckbox" value="sale">
+                    <label class="form-check-label" for="saleCheckbox">Venta</label>
+                </div>
+                <input type="number" class="form-control" id="salePrice" placeholder="Precio venta" readonly>
+            </div>
+            <div class="form-group col-sm-3">
+                <div class="form-check form-check-inline" style="margin-bottom: 8px">
+                    <input class="form-check-input" type="checkbox" id="rentCheckbox" value="rent">
+                    <label class="form-check-label" for="rentCheckbox">Arriendo</label>
+                </div>
+                <input type="number" class="form-control" id="rentPrice" placeholder="Precio arriendo" readonly>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-12">
+                <button type="button" class="btn btn-primary" ng-click="create()" style="float: right">Crear</button>
+            </div>
+        </div>
+    </form>
+</div>

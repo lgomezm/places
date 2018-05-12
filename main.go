@@ -24,6 +24,7 @@ func main() {
 	db.AutoMigrate(&place{})
 	db.AutoMigrate(&purpose{})
 	db.AutoMigrate(&photo{})
+	db.LogMode(true)
 
 	router = gin.Default()
 	router.Static("/static", "static")

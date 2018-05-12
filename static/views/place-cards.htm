@@ -8,6 +8,14 @@
                 </p>
                 <h3>{{ p.name }}</h2>
                 <p class="card-text">{{ p.description }}</p>
+                <ul>
+                <li ng-repeat="pr in p.purposes | filter : {'purpose' : 'rent'}">
+                    Arriendo: {{ pr.price | currency:undefined:0 }}/mes
+                </li>
+                <li ng-repeat="pr in p.purposes | filter : {'purpose' : 'sale'}">
+                    Venta: {{ pr.price | currency:undefined:0 }}
+                </li>
+                </ul>
             </div>
         </div>
     </div>

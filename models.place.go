@@ -36,19 +36,19 @@ type photo struct {
 	PlaceID uint   `json:"place_id"`
 }
 
-func getPlacesBy(placeType string, purpose string,
+func getPlacesBy(placeType string, thePurpose string,
 	minArea float32, maxArea float32, minPrice int64,
 	maxPrice int64, rooms uint, floor uint,
 	location string) []place {
-	q := db.Joins("JOIN purposes ON places.id = purposes.place_id")
+	q := db.Model(&place{}).Joins("JOIN purposes ON places.id = purposes.place_id")
 	if strings.Trim(placeType, " ") != "" {
 		q = q.Where("places.type = ?", placeType)
 	}
 	purposeQry := []string{}
 	var values []interface{}
-	if strings.Trim(purpose, " ") != "" {
+	if strings.Trim(thePurpose, " ") != "" {
 		purposeQry = append(purposeQry, "purposes.purpose = ?")
-		values = append(values, purpose)
+		values = append(values, thePurpose)
 	}
 	if minPrice > 0 {
 		purposeQry = append(purposeQry, "purposes.price >= ?")
@@ -58,14 +58,9 @@ func getPlacesBy(placeType string, purpose string,
 		purposeQry = append(purposeQry, "purposes.price <= ?")
 		values = append(values, maxPrice)
 	}
-	if len(purposeQry) == 0 {
-		q = q.Preload("Purposes")
-	} else {
+	if len(purposeQry) != 0 {
 		c := strings.Join(purposeQry, " AND ")
-		var conditions []interface{}
-		conditions = append(conditions, c)
-		conditions = append(conditions, values...)
-		q = q.Where(c, values...).Preload("Purposes", conditions...)
+		q = q.Where(c, values...)
 	}
 	if minArea > 0 {
 		q = q.Where("places.area >= ?", minArea)
@@ -83,8 +78,39 @@ func getPlacesBy(placeType string, purpose string,
 		q = q.Where("places.location = ?", location)
 	}
 	var places []place
-	q.Find(&places)
+	q.Select(`DISTINCT id, name, description, type, area, 
+		floor, bedrooms, bathrooms, stratum, parking, 
+		location, latitude, longitude`).Scan(&places)
+	purposes := getPurposesOf(places, thePurpose, minPrice, maxPrice)
+	m := make(map[uint][]purpose)
+	for _, p := range purposes {
+		m[p.PlaceID] = append(m[p.PlaceID], p)
+	}
+	for i := 0; i < len(places); i++ {
+		places[i].Purposes = m[places[i].ID]
+	}
 	return places
+}
+
+func getPurposesOf(places []place, thePurpose string,
+	minPrice int64, maxPrice int64) []purpose {
+	q := db
+	if strings.Trim(thePurpose, " ") != "" {
+		q = q.Where("purpose = ?", thePurpose)
+	}
+	if minPrice > 0 {
+		q = q.Where("price >= ?", minPrice)
+	}
+	if maxPrice > 0 {
+		q = q.Where("price <= ?", maxPrice)
+	}
+	var ids []uint
+	for _, p := range places {
+		ids = append(ids, p.ID)
+	}
+	var purposes []purpose
+	q.Where("place_id in (?)", ids).Find(&purposes)
+	return purposes
 }
 
 func getPlaceByID(placeID int) place {
