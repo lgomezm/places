@@ -67,11 +67,11 @@ app.controller('PlaceDetailController', function($scope, $resource, $location) {
 });
 app.controller('PlaceSearchController', function($scope, $http, $location) {
     $scope.search = function() {
-        var purposeParam = getDropdownValue($("#purpose"));
-        var typeParam = getDropdownValue($("#type"));
-        var locationParam = getDropdownValue($("#location"));
-        var roomsParam = getDropdownValue($("#rooms"));
-        var floorParam = getDropdownValue($("#floor"));
+        var purposeParam = getDropdownValue($("#purpose"), "all");
+        var typeParam = getDropdownValue($("#type"), "all");
+        var locationParam = getDropdownValue($("#location"), "all");
+        var roomsParam = getDropdownValue($("#rooms"), "all");
+        var floorParam = getDropdownValue($("#floor"), "all");
         var minAreaParam = getTextValue($("#minArea"));
         var maxAreaParam = getTextValue($("#maxArea"));
         var minPriceParam = getTextValue($("#minPrice"));
@@ -142,7 +142,94 @@ app.controller('CreatePlaceController', function($scope, $http, $location) {
                 });
     };
     $scope.create = function() {
-        
+        var place = {};
+        var placeName = getTextValue($("#placeName"));
+        if (placeName == null) {
+            return;
+        } else {
+            place.name = placeName;
+        }
+        var type = getDropdownValue($("#type"), "0");
+        if (type == null) {
+            return;
+        } else {
+            place.type = type;
+        }
+        var placeDesc = getTextValue($("#placeDesc"));
+        if (placeDesc == null) {
+            return;
+        } else {
+            place.description = placeDesc;
+        }
+        var area = getTextValue($("#placeArea"));
+        if (area == null) {
+            return;
+        } else {
+            place.area = parseInt(area);
+        }
+        var floor = getTextValue($("#floor"));
+        if (floor == null) {
+            return;
+        } else {
+            place.floor = parseInt(floor);
+        }
+        var bathrooms = getTextValue($("#bathrooms"));
+        if (bathrooms == null) {
+            return;
+        } else {
+            place.bathrooms = parseInt(bathrooms);
+        }
+        var bedrooms = getTextValue($("#bedrooms"));
+        if (bedrooms == null) {
+            return;
+        } else {
+            place.bedrooms = parseInt(bedrooms);
+        }
+        var stratum = getDropdownValue($("#stratum"), "0");
+        if (stratum == null) {
+            return;
+        } else {
+            place.stratum = parseInt(stratum);
+        }
+        var parking = getTextValue($("#parking"));
+        if (parking == null) {
+            return;
+        } else {
+            place.parking = parseInt(parking);
+        }
+        place.purposes = [];
+        if ($("#saleCheckbox").is(':checked')) {
+            var price = getTextValue($("#salePrice"));
+            if (price == null) {
+                return;
+            }
+            place.purposes.push({
+                purpose: "sale",
+                price: parseInt(price)
+            });
+        }
+        if ($("#rentCheckbox").is(':checked')) {
+            var price = getTextValue($("#rentPrice"));
+            if (price == null) {
+                return;
+            }
+            place.purposes.push({
+                purpose: "rent",
+                price: parseInt(price)
+            });
+        }
+        if (place.purposes.length == 0) {
+            return;
+        }
+        $http({
+            method: 'POST',
+            url: '../places',
+            data: place
+          }).then(function successCallback(response) {
+              $location.path("/admin");
+          }, function errorCallback(response) {
+              alert(response.data);
+          });
     };
     $('#saleCheckbox').change(function() {
         $("#salePrice").prop('readonly', !this.checked);
@@ -160,8 +247,8 @@ function getTextValue(textInput) {
     return textInput.val();
 }
 
-function getDropdownValue(dropDown) {
-    if (dropDown.val() === "all") {
+function getDropdownValue(dropDown, defaultValue) {
+    if (dropDown.val() === defaultValue) {
         return null;
     }
     return dropDown.val();
