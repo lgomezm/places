@@ -34,6 +34,7 @@ type photo struct {
 	gorm.Model
 	URL     string `json:"url" gorm:"not null"`
 	PlaceID uint   `json:"place_id"`
+	S3Key   string `json:"s3_key"`
 }
 
 func getPlacesBy(placeType string, thePurpose string,
@@ -165,4 +166,14 @@ func softDeletePlace(placeID int) bool {
 func createPhoto(p photo) photo {
 	db.Create(&p)
 	return p
+}
+
+func getPhoto(photoID int) photo {
+	var p photo
+	db.First(&p, photoID)
+	return p
+}
+
+func softDeletePhoto(p photo) {
+	db.Delete(&p)
 }

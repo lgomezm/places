@@ -2,32 +2,28 @@ var app = angular.module("PlacesApp", ["ngResource", "ngRoute"]);
 app.config(function($routeProvider) {
     $routeProvider
     .when("/", {
-        templateUrl : "views/home.htm",
-        controller: "HomeController"
+        templateUrl : "views/home.htm"
     })
     .when("/places", {
-        templateUrl : "views/home.htm",
-        controller: "HomeController"
+        templateUrl : "views/home.htm"
     })
     .when('/places/create', {
-        templateUrl: 'views/place-create.htm',
-        controller: "CreatePlaceController"
+        templateUrl: 'views/place-create.htm'
+    })
+    .when('/places/show/:placeId', {
+        templateUrl: 'views/place-show.htm'
     })
     .when('/places/:placeId', {
-        templateUrl: 'views/place-detail.htm',
-        controller: "PlaceDetailController"
+        templateUrl: 'views/place-detail.htm'
     })
     .when('/search', {
-        templateUrl: 'views/place-search.htm',
-        controller: "PlaceSearchController"
+        templateUrl: 'views/place-search.htm'
     })
     .when('/login', {
-        templateUrl: 'views/login.htm',
-        controller: "LoginController"
+        templateUrl: 'views/login.htm'
     })
     .when('/admin', {
-        templateUrl: 'views/admin.htm',
-        controller: "AdminController"
+        templateUrl: 'views/admin.htm'
     });
 });
 app.controller('HomeController', function($scope, $resource, $location) {
@@ -61,9 +57,7 @@ app.controller('PlaceDetailController', function($scope, $resource, $location) {
         $("#placeCarousel").carousel('next');
     };
     $("#placeCarousel").carousel();
-    var path = $location.path();
-    var id = path.substring(path.lastIndexOf('/') + 1);
-    $scope.show(id);
+    $scope.show(getPlaceId($location));
 });
 app.controller('PlaceSearchController', function($scope, $http, $location) {
     $scope.search = function() {
@@ -226,7 +220,7 @@ app.controller('CreatePlaceController', function($scope, $http, $location) {
             url: '../places',
             data: place
           }).then(function successCallback(response) {
-              $location.path("/admin");
+              $location.path("/places/show/" + response.data.ID);
           }, function errorCallback(response) {
               alert(response.data);
           });
@@ -237,6 +231,51 @@ app.controller('CreatePlaceController', function($scope, $http, $location) {
     $('#rentCheckbox').change(function() {
         $("#rentPrice").prop('readonly', !this.checked);
     });
+    $scope.isLoggedIn();
+});
+
+app.controller('ShowPlaceController', function($scope, $http, $resource, $location) {
+    $scope.placeId = getPlaceId($location);
+    var Place = $resource("../places/:id", {id: '@id'}, {});
+    $scope.isLoggedIn = function() {
+        $http.get('../logged-in')
+            .then(function successCallback(response) {
+                    $scope.load($scope.placeId);
+                }, 
+                function errorCallback(response) {
+                    $location.path("/login");
+                });
+    };
+    $scope.load = function() {
+        Place.get({id: $scope.placeId}, function(data) {
+            $scope.place = data;
+            setPhotosToScope($scope, data.photos);
+        });
+    };
+    $('#photoFile').on('change', function() {
+        var file = this.files[0];
+        /*if (file.size > 1024) {
+            alert('max upload size is 1k');
+            return;
+        }*/
+        $scope.uploadPhoto(file);
+        // Also see .name, .type
+    });
+    $scope.uploadPhoto = function(file) {
+        var fd = new FormData();
+        fd.append("file", file, file.name);
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("load", function uploadComplete(evt) {
+            /* This event is raised when the server send back a response */
+            alert(evt.target.responseText);
+            $scope.load();
+        }, false);
+        xhr.addEventListener("error", function uploadFailed(evt) {
+            alert("There was an error attempting to upload the file.");
+        }, false);
+        xhr.open("POST", "../places/" + $scope.placeId + "/photos");
+        xhr.send(fd);
+    };
     $scope.isLoggedIn();
 });
 
@@ -267,4 +306,24 @@ function setPlacesToScope(scope, data) {
     if (subPlaces.length > 0) {
         scope.places.push(subPlaces);
     }
+}
+
+function setPhotosToScope(scope, photos) {
+    scope.photos = [];
+    subPhotos = [];
+    for (i = 0; i < photos.length; i++) {
+        subPhotos.push(photos[i]);
+        if (subPhotos.length == 3) {
+            scope.photos.push(subPhotos);
+            subPhotos = [];
+        }
+    }
+    if (subPhotos.length > 0) {
+        scope.photos.push(subPhotos);
+    }
+}
+
+function getPlaceId(location) {
+    var path = location.path();
+    return path.substring(path.lastIndexOf('/') + 1);
 }
