@@ -22,6 +22,12 @@ func initializeRoutes() {
 	router.POST("/places/:place_id/photos", createPlacePhoto)
 	router.DELETE("/places/:place_id/photos/:photo_id", deletePlacePhoto)
 
+	router.GET("/owners", listOwners)
+	router.GET("/owners/:owner_id", getOwner)
+	router.POST("/owners", postOwner)
+	router.PUT("/owners/:owner_id", putOwner)
+	router.DELETE("/owners/:owner_id", deleteOwner)
+
 	private := router.Group("/private")
 	private.Use(authRequired)
 	private.GET("/", private1)

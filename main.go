@@ -21,6 +21,7 @@ func main() {
 	defer db.Close()
 
 	db.AutoMigrate(&user{})
+	db.AutoMigrate(&owner{})
 	db.AutoMigrate(&place{})
 	db.AutoMigrate(&purpose{})
 	db.AutoMigrate(&photo{})

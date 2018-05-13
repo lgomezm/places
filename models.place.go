@@ -23,6 +23,8 @@ type place struct {
 	Address     string    `json:"address"`
 	Purposes    []purpose `json:"purposes" gorm:"auto_preload"`
 	Photos      []photo   `json:"photos"`
+	OwnerID     uint      `json:"-"`
+	Owner       owner     `json:"-"`
 }
 
 type purpose struct {
