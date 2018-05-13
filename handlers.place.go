@@ -18,9 +18,19 @@ func getPlaces(c *gin.Context) {
 	rooms := toUInt(c.Query("rooms"))
 	floor := toUInt(c.Query("floor"))
 	location := c.Query("location")
-
+	limit, err := strconv.ParseUint(c.Query("limit"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Param 'limit' should be a positive number"})
+		return
+	}
+	start, err := strconv.ParseUint(c.Query("start"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Param 'start' should be a positive number"})
+		return
+	}
 	ps := getPlacesBy(placeType, purpose, minArea,
-		maxArea, minPrice, maxPrice, rooms, floor, location)
+		maxArea, minPrice, maxPrice, rooms, floor,
+		location, uint(start), uint(limit))
 	session := sessions.Default(c)
 	if !isUserLoggedIn(session) {
 		for i := 0; i < len(ps); i++ {

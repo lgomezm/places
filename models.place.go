@@ -43,7 +43,7 @@ type photo struct {
 func getPlacesBy(placeType string, thePurpose string,
 	minArea float32, maxArea float32, minPrice int64,
 	maxPrice int64, rooms uint, floor uint,
-	location string) []place {
+	location string, start uint, limit uint) []place {
 	q := db.Model(&place{}).Joins("JOIN purposes ON places.id = purposes.place_id")
 	if strings.Trim(placeType, " ") != "" {
 		q = q.Where("places.type = ?", placeType)
@@ -82,9 +82,8 @@ func getPlacesBy(placeType string, thePurpose string,
 		q = q.Where("places.location = ?", location)
 	}
 	var places []place
-	q.Select(`DISTINCT id, name, description, type, area, 
-		floor, bedrooms, bathrooms, stratum, parking, 
-		location, latitude, longitude`).Scan(&places)
+	q.Limit(limit).Offset(start).Select(`DISTINCT id, name, description, type, area, 
+		floor, bedrooms, bathrooms, stratum, parking, location, latitude, longitude`).Scan(&places)
 	purposes := getPurposesOf(places, thePurpose, minPrice, maxPrice)
 	m := make(map[uint][]purpose)
 	for _, p := range purposes {
