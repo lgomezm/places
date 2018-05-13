@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -67,13 +66,16 @@ func isLoggedIn(c *gin.Context) {
 
 func logout(c *gin.Context) {
 	session := sessions.Default(c)
-	user := session.Get("user")
-	if user == nil {
+	if isUserLoggedIn(session) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
 	} else {
-		log.Println(user)
 		session.Delete("user")
 		session.Save()
 		c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
 	}
+}
+
+func isUserLoggedIn(session sessions.Session) bool {
+	user := session.Get("user")
+	return user != nil
 }

@@ -137,59 +137,38 @@ app.controller('CreatePlaceController', function($scope, $http, $location) {
     };
     $scope.create = function() {
         var place = {};
-        var placeName = getTextValue($("#placeName"));
-        if (placeName == null) {
+        if (!readValueToPlace(place, "name", "placeName", "text")) {
             return;
-        } else {
-            place.name = placeName;
         }
-        var type = getDropdownValue($("#type"), "0");
-        if (type == null) {
+        if (!readValueToPlace(place, "type", "type", "dropdown")) {
             return;
-        } else {
-            place.type = type;
         }
-        var placeDesc = getTextValue($("#placeDesc"));
-        if (placeDesc == null) {
+        if (!readValueToPlace(place, "description", "placeDesc", "text")) {
             return;
-        } else {
-            place.description = placeDesc;
         }
-        var area = getTextValue($("#placeArea"));
-        if (area == null) {
+        if (!readValueToPlace(place, "area", "placeArea", "text", parseInt)) {
             return;
-        } else {
-            place.area = parseInt(area);
         }
-        var floor = getTextValue($("#floor"));
-        if (floor == null) {
+        if (!readValueToPlace(place, "floor", "floor", "text", parseInt)) {
             return;
-        } else {
-            place.floor = parseInt(floor);
         }
-        var bathrooms = getTextValue($("#bathrooms"));
-        if (bathrooms == null) {
+        if (!readValueToPlace(place, "bathrooms", "bathrooms", "text", parseInt)) {
             return;
-        } else {
-            place.bathrooms = parseInt(bathrooms);
         }
-        var bedrooms = getTextValue($("#bedrooms"));
-        if (bedrooms == null) {
+        if (!readValueToPlace(place, "bedrooms", "bedrooms", "text", parseInt)) {
             return;
-        } else {
-            place.bedrooms = parseInt(bedrooms);
         }
-        var stratum = getDropdownValue($("#stratum"), "0");
-        if (stratum == null) {
+        if (!readValueToPlace(place, "stratum", "stratum", "dropdown", parseInt)) {
             return;
-        } else {
-            place.stratum = parseInt(stratum);
         }
-        var parking = getTextValue($("#parking"));
-        if (parking == null) {
+        if (!readValueToPlace(place, "parking", "parking", "text", parseInt)) {
             return;
-        } else {
-            place.parking = parseInt(parking);
+        }
+        if (!readValueToPlace(place, "address", "address", "text")) {
+            return;
+        }
+        if (!readValueToPlace(place, "location", "location", "dropdown")) {
+            return;
         }
         place.purposes = [];
         if ($("#saleCheckbox").is(':checked')) {
@@ -330,6 +309,30 @@ function setPhotosToScope(scope, photos) {
     if (subPhotos.length > 0) {
         scope.photos.push(subPhotos);
     }
+}
+
+function readValueToPlace(place, field, inputId, inputType) {
+    return readValueToPlace(place, field, inputId, inputType, null);
+}
+
+function readValueToPlace(place, field, inputId, inputType, transform) {
+    var value;
+    if (inputType === "text") {
+        value = getTextValue($("#" + inputId));
+    } else if (inputType === "dropdown") {
+        value = getDropdownValue($("#" + inputId), "0");
+    } else {
+        return false;
+    }
+    if (value == null) {
+        return false;
+    }
+    if (transform == null) {
+        place[field] = value;
+    } else {
+        place[field] = transform(value);
+    }
+    return true;
 }
 
 function getPlaceId(location) {

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,6 +21,12 @@ func getPlaces(c *gin.Context) {
 
 	ps := getPlacesBy(placeType, purpose, minArea,
 		maxArea, minPrice, maxPrice, rooms, floor, location)
+	session := sessions.Default(c)
+	if !isUserLoggedIn(session) {
+		for i := 0; i < len(ps); i++ {
+			ps[i].Address = ""
+		}
+	}
 	c.JSON(http.StatusOK, ps)
 }
 
@@ -51,6 +58,10 @@ func getPlace(c *gin.Context) {
 	if placeID, err := strconv.Atoi(c.Param("place_id")); err == nil {
 		place := getPlaceByID(placeID)
 		if place.ID > 0 {
+			session := sessions.Default(c)
+			if !isUserLoggedIn(session) {
+				place.Address = ""
+			}
 			c.JSON(http.StatusOK, place)
 		} else {
 			c.AbortWithStatus(http.StatusNotFound)
