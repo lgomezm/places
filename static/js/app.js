@@ -276,6 +276,15 @@ app.controller('ShowPlaceController', function($scope, $http, $resource, $locati
         xhr.open("POST", "../places/" + $scope.placeId + "/photos");
         xhr.send(fd);
     };
+    $scope.deletePhoto = function(photoId) {
+        $http.delete("../places/" + $scope.placeId + "/photos/" + photoId)
+            .then(function successCallback(response) {
+                $scope.load($scope.placeId);
+            }, 
+            function errorCallback(response) {
+                alert(response.data);
+            });
+    };
     $scope.isLoggedIn();
 });
 
