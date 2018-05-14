@@ -17,10 +17,15 @@ app.config(function($routeProvider) {
         templateUrl: 'views/place-detail.htm'
     })
     .when("/owners/create", {
-        templateUrl : "views/owner-create.htm"
+        templateUrl : "views/owner-create.htm",
+        controller: "CreateOwnerController"
     })
     .when("/owners/show/:ownerId", {
         templateUrl : "views/owner-show.htm"
+    })
+    .when("/owners/update/:ownerId", {
+        templateUrl : "views/owner-create.htm",
+        controller: "UpdateOwnerController"
     })
     .when('/search', {
         templateUrl: 'views/place-search.htm'
@@ -257,65 +262,59 @@ app.controller('ShowPlaceController', function($scope, $http, $resource, $locati
     };
 });
 app.controller('CreateOwnerController', function($scope, $http, $location) {
+    $scope.actionBtn = "Crear";
     isLoggedIn($http,
         function(response) {}, 
         function(response) {
             $location.path("/login");
         });
-    $scope.create = function() {
-        var owner = {};
-        if (!readValueToObject(owner, "first_name", "firstname", "text")) {
-            return;
-        }
-        if (!readValueToObject(owner, "last_name", "lastname", "text")) {
-            return;
-        }
-        if (!readValueToObject(owner, "dni", "dni", "text")) {
-            return;
-        }
-        if (!readValueToObject(owner, "dni_type", "dni_type", "dropdown")) {
-            return;
-        }
-        if (!readValueToObject(owner, "email", "email", "text")) {
-            return;
-        }
-        if (!readValueToObject(owner, "phone", "phone", "text")) {
-            return;
-        }
-        if (!readValueToObject(owner, "bank", "bank", "dropdown")) {
-            return;
-        }
-        if (!readValueToObject(owner, "account_type", "account_type", "dropdown")) {
-            return;
-        }
-        if (!readValueToObject(owner, "account", "account", "text")) {
-            return;
-        }
-        $http({
-            method: 'POST',
-            url: '../owners',
-            data: owner
-          }).then(function successCallback(response) {
-              $location.path("/owners/show/" + response.data.ID);
-          }, function errorCallback(response) {
-              alert(response.data);
-          });
+    $scope.process = function() {
+        processOwner($http, $location);
     };
 });
 app.controller('ShowOwnerController', function($scope, $http, $resource, $location) {
     var Owner = $resource("../owners/:id", {id: '@id'}, {});
     isLoggedIn($http,
         function(response) {
-            $scope.ownerID = getCurrentObjectId($location);
+            $scope.ownerId = getCurrentObjectId($location);
             $scope.load();
         }, 
         function(response) {
             $location.path("/login");
         });
     $scope.load = function() {
-        Owner.get({id: $scope.ownerID}, function(data) {
+        Owner.get({id: $scope.ownerId}, function(data) {
             $scope.owner = data;
         });
+    };
+});
+app.controller('UpdateOwnerController', function($scope, $http, $location, $resource) {
+    $scope.actionBtn = "Actualizar";
+    var Owner = $resource("../owners/:id", {id: '@id'}, {});
+    isLoggedIn($http,
+        function(response) {
+            $scope.ownerId = getCurrentObjectId($location);
+            $scope.load();
+        }, 
+        function(response) {
+            $location.path("/login");
+        });
+    $scope.load = function() {
+        Owner.get({id: $scope.ownerId}, function(data) {
+            owner = data;
+            $("#dni_type").val(owner.dni_type);
+            $("#dni").val(owner.dni);
+            $("#firstname").val(owner.firstname);
+            $("#lastname").val(owner.lastname);
+            $("#email").val(owner.email);
+            $("#phone").val(owner.phone);
+            $("#bank").val(owner.bank);
+            $("#account_type").val(owner.account_type);
+            $("#account").val(owner.account);
+        });
+    };
+    $scope.process = function() {
+        processOwner($http, $location, $scope.ownerId);
     };
 });
 
@@ -450,4 +449,55 @@ function addPurposeToPlace(place, purpose, priceField) {
         price: parseInt(price)
     });
     return true;
+}
+
+function processOwner(http, location, ownerId) {
+    var owner = {};
+    if (!readValueToObject(owner, "firstname", "firstname", "text")) {
+        return;
+    }
+    if (!readValueToObject(owner, "lastname", "lastname", "text")) {
+        return;
+    }
+    if (!readValueToObject(owner, "dni", "dni", "text")) {
+        return;
+    }
+    if (!readValueToObject(owner, "dni_type", "dni_type", "dropdown")) {
+        return;
+    }
+    if (!readValueToObject(owner, "email", "email", "text")) {
+        return;
+    }
+    if (!readValueToObject(owner, "phone", "phone", "text")) {
+        return;
+    }
+    if (!readValueToObject(owner, "bank", "bank", "dropdown")) {
+        return;
+    }
+    if (!readValueToObject(owner, "account_type", "account_type", "dropdown")) {
+        return;
+    }
+    if (!readValueToObject(owner, "account", "account", "text")) {
+        return;
+    }
+    var config;
+    if (ownerId != null) {
+        owner['ID'] = parseInt(ownerId);
+        config = {
+            method: 'PUT',
+            url: '../owners/' + ownerId,
+            data: owner
+        };
+    } else {
+        config = {
+            method: 'POST',
+            url: '../owners',
+            data: owner
+        };
+    }
+    http(config).then(function successCallback(response) {
+          location.path("/owners/show/" + response.data.ID);
+      }, function errorCallback(response) {
+          alert(response.data);
+      });
 }
