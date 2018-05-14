@@ -1,0 +1,89 @@
+<div ng-include="'views/admin-navbar.htm'"></div>
+<div ng-controller="CreateOwnerController" class="container">
+    <form>
+        <div class="row">
+            <div class="form-group col-sm-6">
+                <label for="dni_type">Tipo de documento</label>
+                <select class="form-control" id="dni_type">
+                    <option value="0">--Seleccione--</option>
+                    <option title="C.C. (Cédula de Ciudadanía)" value="CC">C.C. (Cédula de Ciudadanía)</option>
+                    <option title="C.E. (Cédula de Extranjería)" value="CE">C.E. (Cédula de Extranjería)</option>
+                    <option title="NIT (Número Identificación Tributaria)" value="NIT">NIT (Número Identificación Tributaria)</option>
+                    <option title="T.I. (Tarjeta de Identidad)" value="TI">T.I. (Tarjeta de Identidad)</option>
+                    <option title="PP (Pasaporte)" value="PP">PP (Pasaporte)</option>
+                    <option title="IDC (Identificador Único de Cliente)" value="IDC">IDC (Identificador Único de Cliente)</option>
+                    <option title="CEL (Número Móvil)" value="CEL">CEL (Número Móvil)</option>
+                    <option title="R.C. (Registro Civil)" value="RC">R.C. (Registro Civil)</option>
+                    <option title="D.E. (Documento de Identificación Extranjero)" value="DE">D.E. (Documento de Identificación Extranjero)</option>
+                </select>
+            </div>
+            <div class="form-group col-sm-6">
+                <label for="dni">Número de documento</label>
+                <input type="text" class="form-control" id="dni" placeholder="Número de documento">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-6">
+                <label for="firstname">Nombre</label>
+                <input type="text" class="form-control" id="firstname" placeholder="Nombre del propietario">
+            </div>
+            <div class="form-group col-sm-6">
+                <label for="lastname">Apellido</label>
+                <input type="text" class="form-control" id="lastname" placeholder="Apellido del propietario">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-6">
+                <label for="email">Email</label>
+                <input type="text" class="form-control" id="email" placeholder="Email del propietario">
+            </div>
+            <div class="form-group col-sm-6">
+                <label for="phone">Teléfono</label>
+                <input type="text" class="form-control" id="phone" placeholder="Teléfono de contacto">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-4">
+                <label for="bank">Banco</label>
+                <select class="form-control" id="bank">
+                    <option value="0">--Seleccione--</option>
+                    <option value="BANCO AGRARIO">BANCO AGRARIO</option>
+                    <option value="BANCO AV VILLAS">BANCO AV VILLAS</option>
+                    <option value="BANCO BBVA COLOMBIA S.A.">BANCO BBVA COLOMBIA S.A.</option>
+                    <option value="BANCO CAJA SOCIAL">BANCO CAJA SOCIAL</option>
+                    <option value="BANCO COLPATRIA">BANCO COLPATRIA</option>
+                    <option value="BANCO COOPERATIVO COOPCENTRAL">BANCO COOPERATIVO COOPCENTRAL</option>
+                    <option value="BANCO DAVIVIENDA">BANCO DAVIVIENDA</option>
+                    <option value="BANCO DE BOGOTA">BANCO DE BOGOTA</option>
+                    <option value="BANCO DE OCCIDENTE">BANCO DE OCCIDENTE</option>
+                    <option value="BANCO FALABELLA">BANCO FALABELLA </option>
+                    <option value="BANCO GNB SUDAMERIS">BANCO GNB SUDAMERIS</option>
+                    <option value="BANCO PICHINCHA S.A.">BANCO PICHINCHA S.A.</option>
+                    <option value="BANCO POPULAR">BANCO POPULAR</option>
+                    <option value="BANCO PROCREDIT">BANCO PROCREDIT</option>
+                    <option value="BANCO SANTANDER COLOMBIA">BANCO SANTANDER COLOMBIA</option>
+                    <option value="BANCOLOMBIA">BANCOLOMBIA</option>
+                    <option value="BANCOOMEVA S.A.">BANCOOMEVA S.A.</option>
+                    <option value="CITIBANK">CITIBANK </option>
+                </select>
+            </div>
+            <div class="form-group col-sm-4">
+                <label for="account_type">Tipo de Cuenta</label>
+                <select class="form-control" id="account_type">
+                    <option value="0">--Seleccione--</option>
+                    <option value="savings">Ahorros</option>
+                    <option value="checking">Corriente</option>
+                </select>
+            </div>
+            <div class="form-group col-sm-4">
+                <label for="account">Número de Cuenta</label>
+                <input type="text" class="form-control" id="account" placeholder="Número de cuenta">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-12">
+                <button type="button" class="btn btn-primary" ng-click="create()" style="float: right">Crear</button>
+            </div>
+        </div>
+    </form>
+</div>

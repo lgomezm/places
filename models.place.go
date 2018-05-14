@@ -23,7 +23,7 @@ type place struct {
 	Address     string    `json:"address"`
 	Purposes    []purpose `json:"purposes" gorm:"auto_preload"`
 	Photos      []photo   `json:"photos"`
-	OwnerID     uint      `json:"-"`
+	OwnerID     uint      `json:"owner_id"`
 	Owner       owner     `json:"-"`
 }
 
@@ -144,6 +144,7 @@ func updatePlace(p place) place {
 			Latitude:    p.Latitude,
 			Longitude:   p.Longitude,
 			Address:     p.Address,
+			OwnerID:     p.OwnerID,
 		})
 	if len(p.Purposes) > 0 {
 		tx.Where("place_id = ?", p.ID).Delete(purpose{})
