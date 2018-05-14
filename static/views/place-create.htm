@@ -1,5 +1,5 @@
 <div ng-include="'views/admin-navbar.htm'"></div>
-<div ng-controller="CreatePlaceController" class="container">
+<div class="container">
     <form>
         <div class="row">
             <div class="form-group col-sm-8">
@@ -96,7 +96,7 @@
         </div>
         <div class="row">
             <div class="form-group col-sm-12">
-                <button type="button" class="btn btn-primary" ng-click="create()" style="float: right">Crear</button>
+                <button type="button" class="btn btn-primary" ng-click="process()" style="float: right">{{ actionBtn }}</button>
             </div>
         </div>
     </form>

@@ -82,8 +82,8 @@ func getPlacesBy(placeType string, thePurpose string,
 		q = q.Where("places.location = ?", location)
 	}
 	var places []place
-	q.Limit(limit).Offset(start).Select(`DISTINCT id, name, description, type, area, 
-		floor, bedrooms, bathrooms, stratum, parking, location, latitude, longitude`).Scan(&places)
+	q.Limit(limit).Offset(start).Select(`DISTINCT id, name, description, type, area, floor, 
+		bedrooms, bathrooms, stratum, parking, location, latitude, longitude, owner_id`).Scan(&places)
 	purposes := getPurposesOf(places, thePurpose, minPrice, maxPrice)
 	m := make(map[uint][]purpose)
 	for _, p := range purposes {

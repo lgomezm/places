@@ -8,10 +8,15 @@ app.config(function($routeProvider) {
         templateUrl : "views/home.htm"
     })
     .when('/owners/:ownerId/places/create', {
-        templateUrl: 'views/place-create.htm'
+        templateUrl: 'views/place-create.htm',
+        controller: "CreatePlaceController"
     })
     .when('/owners/:ownerId/places/show/:placeId', {
         templateUrl: 'views/place-show.htm'
+    })
+    .when('/owners/:ownerId/places/update/:placeId', {
+        templateUrl: 'views/place-create.htm',
+        controller: "UpdatePlaceController"
     })
     .when('/places/:placeId', {
         templateUrl: 'views/place-detail.htm'
@@ -135,7 +140,8 @@ app.controller('AdminController', function($scope, $http, $location) {
         });
 });
 
-app.controller('CreatePlaceController', function($scope, $http, $location, $controller) {
+app.controller('CreatePlaceController', function($scope, $http, $location) {
+    $scope.actionBtn = "Crear";
     isLoggedIn($http, 
         function(response) {
             $scope.ownerId = getOwnerId($location);
@@ -146,64 +152,8 @@ app.controller('CreatePlaceController', function($scope, $http, $location, $cont
     if ($scope.ownerId == -1) {
         $location.path("/admin");
     }
-    $scope.create = function() {
-        var place = { owner_id: parseInt($scope.ownerId) };
-        if (!readValueToObject(place, "name", "placeName", "text")) {
-            return;
-        }
-        if (!readValueToObject(place, "type", "type", "dropdown")) {
-            return;
-        }
-        if (!readValueToObject(place, "description", "placeDesc", "text")) {
-            return;
-        }
-        if (!readValueToObject(place, "area", "placeArea", "text", parseInt)) {
-            return;
-        }
-        if (!readValueToObject(place, "floor", "floor", "text", parseInt)) {
-            return;
-        }
-        if (!readValueToObject(place, "bathrooms", "bathrooms", "text", parseInt)) {
-            return;
-        }
-        if (!readValueToObject(place, "bedrooms", "bedrooms", "text", parseInt)) {
-            return;
-        }
-        if (!readValueToObject(place, "stratum", "stratum", "dropdown", parseInt)) {
-            return;
-        }
-        if (!readValueToObject(place, "parking", "parking", "text", parseInt)) {
-            return;
-        }
-        if (!readValueToObject(place, "address", "address", "text")) {
-            return;
-        }
-        if (!readValueToObject(place, "location", "location", "dropdown")) {
-            return;
-        }
-        place.purposes = [];
-        if ($("#saleCheckbox").is(':checked')) {
-            if (!addPurposeToPlace(place, "sale", "salePrice")) {
-                return;
-            }
-        }
-        if ($("#rentCheckbox").is(':checked')) {
-            if (!addPurposeToPlace(place, "rent", "rentPrice")) {
-                return;
-            }
-        }
-        if (place.purposes.length == 0) {
-            return;
-        }
-        $http({
-            method: 'POST',
-            url: '../places',
-            data: place
-          }).then(function successCallback(response) {
-              $location.path("/owners/" + $scope.ownerId + "/places/show/" + response.data.ID);
-          }, function errorCallback(response) {
-              alert(response.data);
-          });
+    $scope.process = function() {
+        processPlace($http, $location, $scope.ownerId);
     };
     $('#saleCheckbox').change(function() {
         $("#salePrice").prop('readonly', !this.checked);
@@ -260,6 +210,58 @@ app.controller('ShowPlaceController', function($scope, $http, $resource, $locati
                 alert(response.data);
             });
     };
+});
+app.controller('UpdatePlaceController', function($scope, $http, $location, $resource) {
+    $scope.actionBtn = "Actualizar";
+    var Place = $resource("../places/:id", {id: '@id'}, {});
+    isLoggedIn($http, 
+        function(response) {
+            $scope.ownerId = getOwnerId($location);
+            $scope.placeId = getCurrentObjectId($location);
+            $scope.load();
+        },
+        function(response) {
+            $location.path("/login");
+        });
+    if ($scope.ownerId == -1) {
+        $location.path("/admin");
+    }
+    $scope.load = function() {
+        Place.get({id: $scope.placeId}, function(data) {
+            place = data;
+            $("#placeName").val(place.name);
+            $("#type").val(place.type);
+            $("#placeDesc").val(place.description);
+            $("#location").val(place.location);
+            $("#address").val(place.address);
+            $("#placeArea").val(place.area);
+            $("#floor").val(place.floor);
+            $("#bathrooms").val(place.bathrooms);
+            $("#bedrooms").val(place.bedrooms);
+            $("#stratum").val(place.stratum);
+            $("#parking").val(place.parking);
+            if (place.purposes) {
+                place.purposes.forEach(function(purpose) {
+                    if (purpose.purpose === "rent") {
+                        $("#rentCheckbox").prop('checked', true);
+                        $("#rentPrice").val(purpose.price);
+                    } else if (purpose.purpose === "sale") {
+                        $("#saleCheckbox").prop('checked', true);
+                        $("#salePrice").val(purpose.price);
+                    }
+                });
+            }
+        });
+    };
+    $scope.process = function() {
+        processPlace($http, $location, $scope.ownerId, $scope.placeId);
+    };
+    $('#saleCheckbox').change(function() {
+        $("#salePrice").prop('readonly', !this.checked);
+    });
+    $('#rentCheckbox').change(function() {
+        $("#rentPrice").prop('readonly', !this.checked);
+    });
 });
 app.controller('CreateOwnerController', function($scope, $http, $location) {
     $scope.actionBtn = "Crear";
@@ -425,7 +427,7 @@ function getCurrentObjectId(location) {
 }
 
 function getOwnerId(location) {
-    var re = /\/owners\/(\d+)\/places\/create/;
+    var re = /\/owners\/(\d+)\/places\/(create|update)/;
     var myArray = re.exec(location.path());
     if (null == myArray || myArray.length < 2) {
         return -1;
@@ -497,6 +499,77 @@ function processOwner(http, location, ownerId) {
     }
     http(config).then(function successCallback(response) {
           location.path("/owners/show/" + response.data.ID);
+      }, function errorCallback(response) {
+          alert(response.data);
+      });
+}
+
+function processPlace(http, location, ownerId, placeId) {
+    var place = { owner_id: parseInt(ownerId) };
+    if (!readValueToObject(place, "name", "placeName", "text")) {
+        return;
+    }
+    if (!readValueToObject(place, "type", "type", "dropdown")) {
+        return;
+    }
+    if (!readValueToObject(place, "description", "placeDesc", "text")) {
+        return;
+    }
+    if (!readValueToObject(place, "area", "placeArea", "text", parseInt)) {
+        return;
+    }
+    if (!readValueToObject(place, "floor", "floor", "text", parseInt)) {
+        return;
+    }
+    if (!readValueToObject(place, "bathrooms", "bathrooms", "text", parseInt)) {
+        return;
+    }
+    if (!readValueToObject(place, "bedrooms", "bedrooms", "text", parseInt)) {
+        return;
+    }
+    if (!readValueToObject(place, "stratum", "stratum", "dropdown", parseInt)) {
+        return;
+    }
+    if (!readValueToObject(place, "parking", "parking", "text", parseInt)) {
+        return;
+    }
+    if (!readValueToObject(place, "address", "address", "text")) {
+        return;
+    }
+    if (!readValueToObject(place, "location", "location", "dropdown")) {
+        return;
+    }
+    place.purposes = [];
+    if ($("#saleCheckbox").is(':checked')) {
+        if (!addPurposeToPlace(place, "sale", "salePrice")) {
+            return;
+        }
+    }
+    if ($("#rentCheckbox").is(':checked')) {
+        if (!addPurposeToPlace(place, "rent", "rentPrice")) {
+            return;
+        }
+    }
+    if (place.purposes.length == 0) {
+        return;
+    }
+    var config;
+    if (placeId != null) {
+        place['ID'] = parseInt(placeId);
+        config = {
+            method: 'PUT',
+            url: '../places/' + placeId,
+            data: place
+        };
+    } else {
+        config = {
+            method: 'POST',
+            url: '../places',
+            data: place
+        };
+    }
+    http(config).then(function successCallback(response) {
+          location.path("/owners/" + ownerId + "/places/show/" + response.data.ID);
       }, function errorCallback(response) {
           alert(response.data);
       });
