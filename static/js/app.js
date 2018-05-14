@@ -40,6 +40,10 @@ app.config(function($routeProvider) {
     })
     .when('/admin', {
         templateUrl: 'views/admin.htm'
+    })
+    .when("/admin/places", {
+        templateUrl : "views/place-list.htm",
+        controller: "ListPlacesController"
     });
 });
 app.controller('HomeController', function($scope, $resource, $location) {
@@ -163,10 +167,11 @@ app.controller('CreatePlaceController', function($scope, $http, $location) {
     });
 });
 app.controller('ShowPlaceController', function($scope, $http, $resource, $location) {
-    $scope.placeId = getCurrentObjectId($location);
     var Place = $resource("../places/:id", {id: '@id'}, {});
     isLoggedIn($http,
         function(response) {
+            $scope.ownerId = getOwnerId($location);
+            $scope.placeId = getCurrentObjectId($location);
             $scope.load();
         }, 
         function(response) {
@@ -177,6 +182,9 @@ app.controller('ShowPlaceController', function($scope, $http, $resource, $locati
             $scope.place = data;
             setPhotosToScope($scope, data.photos);
         });
+    };
+    $scope.goToEdit = function() {
+        $location.path("/owners/" + $scope.ownerId + "/places/update/" + $scope.placeId);
     };
     $('#photoFile').on('change', function() {
         var file = this.files[0];
@@ -284,6 +292,12 @@ app.controller('ShowOwnerController', function($scope, $http, $resource, $locati
         function(response) {
             $location.path("/login");
         });
+    $scope.goToEdit = function() {
+        $location.path("/owners/update/" + $scope.ownerId);
+    };
+    $scope.goToNewPlace = function() {
+        $location.path("/owners/" + $scope.ownerId + "/places/create");
+    };
     $scope.load = function() {
         Owner.get({id: $scope.ownerId}, function(data) {
             $scope.owner = data;
@@ -318,6 +332,34 @@ app.controller('UpdateOwnerController', function($scope, $http, $location, $reso
     $scope.process = function() {
         processOwner($http, $location, $scope.ownerId);
     };
+});
+app.controller('ListPlacesController', function($scope, $http, $location) {
+    isLoggedIn($http,
+        function(response) {}, 
+        function(response) {
+            $location.path("/login");
+        });
+    $scope.search = function() {
+        $http({
+            method: 'GET',
+            url: '../places',
+            params: {
+                limit: 10,
+                start: 0
+            }
+          }).then(function successCallback(response) {
+              $scope.places = response.data;
+          }, function errorCallback(response) {
+              alert(error.data);
+          });
+    };
+    $scope.goToShow = function(ownerId, placeId) {
+        $location.path("/owners/" + ownerId + "/places/show/" + placeId);
+    };
+    $scope.goToEdit = function(ownerId, placeId) {
+        $location.path("/owners/" + ownerId + "/places/update/" + placeId);
+    };
+    $scope.search();
 });
 
 app.filter('accountTypeFormat', function() {
@@ -427,7 +469,7 @@ function getCurrentObjectId(location) {
 }
 
 function getOwnerId(location) {
-    var re = /\/owners\/(\d+)\/places\/(create|update)/;
+    var re = /\/owners\/(\d+)\/places\/(show|create|update)/;
     var myArray = re.exec(location.path());
     if (null == myArray || myArray.length < 2) {
         return -1;
