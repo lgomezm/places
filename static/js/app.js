@@ -46,14 +46,20 @@ app.config(function($routeProvider) {
         controller: "ListPlacesController"
     });
 });
-app.controller('HomeController', function($scope, $resource, $location) {
-    var Place = $resource("../places", {}, {});
+app.controller('HomeController', function($scope, $http, $location) {
     $scope.list = function(){
-        Place.query(function(data){
-            setPlacesToScope($scope, data);
-        }, function(error){
-            alert(error.data);
-        });
+        $http({
+            method: 'GET',
+            url: '../places',
+            params: {
+                limit: 15,
+                start: 0
+            }
+          }).then(function successCallback(response) {
+              setPlacesToScope($scope, response.data.places);
+          }, function errorCallback(response) {
+              alert(error.data);
+          });
     };
     $scope.showPlace = function(id) {
         $location.path("/places/" + id);
@@ -102,10 +108,12 @@ app.controller('PlaceSearchController', function($scope, $http, $location) {
                 minArea: minAreaParam,
                 maxArea: maxAreaParam,
                 minPrice: minPriceParam,
-                maxPrice: maxPriceParam
+                maxPrice: maxPriceParam,
+                limit: 15,
+                start: 0
             }
           }).then(function successCallback(response) {
-              setPlacesToScope($scope, response.data);
+              setPlacesToScope($scope, response.data.places);
           }, function errorCallback(response) {
               alert(error.data);
           });
@@ -348,7 +356,7 @@ app.controller('ListPlacesController', function($scope, $http, $location) {
                 start: 0
             }
           }).then(function successCallback(response) {
-              $scope.places = response.data;
+              $scope.places = response.data.places;
           }, function errorCallback(response) {
               alert(error.data);
           });
