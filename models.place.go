@@ -44,10 +44,37 @@ func getPlacesBy(placeType string, thePurpose string,
 	minArea float32, maxArea float32, minPrice int64,
 	maxPrice int64, rooms uint, floor uint,
 	location string, start uint, limit uint) []place {
-	q := db.Model(&place{}).Joins("JOIN purposes ON places.id = purposes.place_id")
-	if strings.Trim(placeType, " ") != "" {
-		q = q.Where("places.type = ?", placeType)
+	q := buildQuery(placeType, thePurpose, minArea, maxArea, minPrice, maxPrice, rooms, floor, location, start, limit)
+	var places []place
+	q.Limit(limit).Offset(start).Select(`DISTINCT id, name, description, type, area, floor, 
+		bedrooms, bathrooms, stratum, parking, location, latitude, longitude, owner_id`).Scan(&places)
+	purposes := getPurposesOf(places, thePurpose, minPrice, maxPrice)
+	m := make(map[uint][]purpose)
+	for _, p := range purposes {
+		m[p.PlaceID] = append(m[p.PlaceID], p)
 	}
+	for i := 0; i < len(places); i++ {
+		places[i].Purposes = m[places[i].ID]
+	}
+	return places
+}
+
+func countPlaces(placeType string, thePurpose string,
+	minArea float32, maxArea float32, minPrice int64,
+	maxPrice int64, rooms uint, floor uint,
+	location string, start uint, limit uint) int {
+	q := buildQuery(placeType, thePurpose, minArea, maxArea, minPrice, maxPrice, rooms, floor, location, start, limit)
+	row := q.Select("COUNT(DISTINCT id)").Row()
+	var count int
+	row.Scan(&count)
+	return count
+}
+
+func buildQuery(placeType string, thePurpose string,
+	minArea float32, maxArea float32, minPrice int64,
+	maxPrice int64, rooms uint, floor uint,
+	location string, start uint, limit uint) *gorm.DB {
+	q := db.Model(&place{})
 	purposeQry := []string{}
 	var values []interface{}
 	if strings.Trim(thePurpose, " ") != "" {
@@ -64,7 +91,10 @@ func getPlacesBy(placeType string, thePurpose string,
 	}
 	if len(purposeQry) != 0 {
 		c := strings.Join(purposeQry, " AND ")
-		q = q.Where(c, values...)
+		q = q.Joins("JOIN purposes ON places.id = purposes.place_id").Where(c, values...)
+	}
+	if strings.Trim(placeType, " ") != "" {
+		q = q.Where("places.type = ?", placeType)
 	}
 	if minArea > 0 {
 		q = q.Where("places.area >= ?", minArea)
@@ -81,18 +111,7 @@ func getPlacesBy(placeType string, thePurpose string,
 	if strings.Trim(location, " ") != "" {
 		q = q.Where("places.location = ?", location)
 	}
-	var places []place
-	q.Limit(limit).Offset(start).Select(`DISTINCT id, name, description, type, area, floor, 
-		bedrooms, bathrooms, stratum, parking, location, latitude, longitude, owner_id`).Scan(&places)
-	purposes := getPurposesOf(places, thePurpose, minPrice, maxPrice)
-	m := make(map[uint][]purpose)
-	for _, p := range purposes {
-		m[p.PlaceID] = append(m[p.PlaceID], p)
-	}
-	for i := 0; i < len(places); i++ {
-		places[i].Purposes = m[places[i].ID]
-	}
-	return places
+	return q
 }
 
 func getPurposesOf(places []place, thePurpose string,

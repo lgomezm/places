@@ -31,13 +31,19 @@ func getPlaces(c *gin.Context) {
 	ps := getPlacesBy(placeType, purpose, minArea,
 		maxArea, minPrice, maxPrice, rooms, floor,
 		location, uint(start), uint(limit))
+	count := countPlaces(placeType, purpose, minArea,
+		maxArea, minPrice, maxPrice, rooms, floor,
+		location, uint(start), uint(limit))
 	session := sessions.Default(c)
 	if !isUserLoggedIn(session) {
 		for i := 0; i < len(ps); i++ {
 			ps[i].Address = ""
 		}
 	}
-	c.JSON(http.StatusOK, ps)
+	rs := make(map[string]interface{})
+	rs["places"] = ps
+	rs["total"] = count
+	c.JSON(http.StatusOK, rs)
 }
 
 func toFloat32(s string) float32 {
