@@ -342,6 +342,7 @@ app.controller('UpdateOwnerController', function($scope, $http, $location, $reso
     };
 });
 app.controller('ListPlacesController', function($scope, $http, $location) {
+    var pageSize = 5;
     isLoggedIn($http,
         function(response) {}, 
         function(response) {
@@ -351,12 +352,12 @@ app.controller('ListPlacesController', function($scope, $http, $location) {
         $http({
             method: 'GET',
             url: '../places',
-            params: {
-                limit: 10,
-                start: 0
-            }
+            params: $scope.filters
           }).then(function successCallback(response) {
               $scope.places = response.data.places;
+              $scope.currPage = parseInt($scope.filters["start"] / pageSize, 10) + 1;
+              $scope.totalPages = Math.ceil(response.data.total / pageSize);
+              $scope.totalPlaces = response.data.total;
           }, function errorCallback(response) {
               alert(error.data);
           });
@@ -367,7 +368,29 @@ app.controller('ListPlacesController', function($scope, $http, $location) {
     $scope.goToEdit = function(ownerId, placeId) {
         $location.path("/owners/" + ownerId + "/places/update/" + placeId);
     };
-    $scope.search();
+    $scope.prevPage = function() {
+        if ($scope.filters["start"] > 0) {
+            $scope.filters["start"] = $scope.filters["start"] - pageSize;
+            $scope.search();
+        }
+    };
+    $scope.nextPage = function() {
+        if ($scope.filters["start"] + pageSize < $scope.totalPlaces) {
+            $scope.filters["start"] = $scope.filters["start"] + pageSize;
+            $scope.search();
+        }
+    };
+    $scope.newSearch = function() {
+        $scope.filters = {
+            purpose: getDropdownValue($("#purpose"), "all"),
+            type: getDropdownValue($("#type"), "all"),
+            location: getDropdownValue($("#location"), "all"),
+            limit: pageSize,
+            start: 0
+        };
+        $scope.search();
+    };
+    $scope.newSearch();
 });
 
 app.filter('accountTypeFormat', function() {
