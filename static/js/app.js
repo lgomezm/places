@@ -21,6 +21,10 @@ app.config(function($routeProvider) {
     .when('/places/:placeId', {
         templateUrl: 'views/place-detail.htm'
     })
+    .when("/owners", {
+        templateUrl : "views/owner-list.htm",
+        controller: "ListOwnersController"
+    })
     .when("/owners/create", {
         templateUrl : "views/owner-create.htm",
         controller: "CreateOwnerController"
@@ -103,16 +107,10 @@ app.controller('PlaceSearchController', function($scope, $http, $location) {
           });
     };
     $scope.prevPage = function() {
-        if ($scope.filters["start"] > 0) {
-            $scope.filters["start"] = $scope.filters["start"] - pageSize;
-            search();
-        }
+        prevPage($scope, search, pageSize);
     };
     $scope.nextPage = function() {
-        if ($scope.filters["start"] + pageSize < $scope.totalPlaces) {
-            $scope.filters["start"] = $scope.filters["start"] + pageSize;
-            search();
-        }
+        nextPage($scope, search, $scope.totalPlaces, pageSize);
     };
     $scope.newSearch = function() {
         $scope.filters = {
@@ -361,7 +359,7 @@ app.controller('ListPlacesController', function($scope, $http, $location) {
         function(response) {
             $location.path("/login");
         });
-    $scope.search = function() {
+    search = function() {
         $http({
             method: 'GET',
             url: '../places',
@@ -382,17 +380,11 @@ app.controller('ListPlacesController', function($scope, $http, $location) {
         $location.path("/owners/" + ownerId + "/places/update/" + placeId);
     };
     $scope.prevPage = function() {
-        if ($scope.filters["start"] > 0) {
-            $scope.filters["start"] = $scope.filters["start"] - pageSize;
-            $scope.search();
-        }
+        prevPage($scope, search, pageSize);
     };
     $scope.nextPage = function() {
-        if ($scope.filters["start"] + pageSize < $scope.totalPlaces) {
-            $scope.filters["start"] = $scope.filters["start"] + pageSize;
-            $scope.search();
-        }
-    };
+        nextPage($scope, search, $scope.totalPlaces, pageSize);
+    }
     $scope.newSearch = function() {
         $scope.filters = {
             purpose: getDropdownValue($("#purpose"), "all"),
@@ -401,7 +393,54 @@ app.controller('ListPlacesController', function($scope, $http, $location) {
             limit: pageSize,
             start: 0
         };
-        $scope.search();
+        search();
+    };
+    $scope.newSearch();
+});
+app.controller('ListOwnersController', function($scope, $http, $location) {
+    var pageSize = 1;
+    isLoggedIn($http,
+        function(response) {}, 
+        function(response) {
+            $location.path("/login");
+        });
+    search = function() {
+        $http({
+            method: 'GET',
+            url: '../owners',
+            params: $scope.filters
+          }).then(function successCallback(response) {
+              $scope.owners = response.data.owners;
+              $scope.currPage = parseInt($scope.filters["start"] / pageSize, 10) + 1;
+              $scope.totalPages = Math.ceil(response.data.total / pageSize);
+              $scope.totalOwners = response.data.total;
+          }, function errorCallback(response) {
+              alert(error.data);
+          });
+    };
+    $scope.goToShow = function(ownerId) {
+        $location.path("/owners/show/" + ownerId);
+    };
+    $scope.goToEdit = function(ownerId) {
+        $location.path("/owners/update/" + ownerId);
+    };
+    $scope.prevPage = function() {
+        prevPage($scope, search, pageSize);
+    };
+    $scope.nextPage = function() {
+        nextPage($scope, search, $scope.totalOwners, pageSize);
+    };
+    $scope.newSearch = function() {
+        $scope.filters = {
+            dni_type: getDropdownValue($("#dni_type"), "all"),
+            dni: getTextValue($("#dni")),
+            firstname: getTextValue($("#firstname")),
+            lastname: getTextValue($("#lastname")),
+            email: getTextValue($("#email")),
+            limit: pageSize,
+            start: 0
+        };
+        search();
     };
     $scope.newSearch();
 });
@@ -433,6 +472,29 @@ app.filter('placeTypeFormat', function() {
             return "Lote";
         } else if (x === "office") {
             return "Oficina";
+        } else {
+            return "-";
+        }
+    };
+});
+app.filter('dniTypeFormat', function() {
+    return function(x) {
+        if (x === "CC") {
+            return "Cédula de Ciudadanía";
+        } else if (x === "CE") {
+            return "Cédula de Extranjería";
+        } else if (x === "TI") {
+            return "Tarjeta de identidad";
+        } else if (x === "PP") {
+            return "Pasaporte";
+        } else if (x === "IDC") {
+            return "Identificador Único de Cliente";
+        } else if (x === "CEL") {
+            return "Número Móvil";
+        } else if (x === "DE") {
+            return "Documento de Identificación Extranjero";
+        } else if (x === "RC") {
+            return "Registro Civil";
         } else {
             return "-";
         }
@@ -659,4 +721,18 @@ function processPlace(http, location, ownerId, placeId) {
       }, function errorCallback(response) {
           alert(response.data);
       });
+}
+
+function prevPage(scope, search, pageSize) {
+    if (scope.filters["start"] > 0) {
+        scope.filters["start"] = scope.filters["start"] - pageSize;
+        search();
+    }
+}
+
+function nextPage(scope, search, totalElements, pageSize) {
+    if (scope.filters["start"] + pageSize < totalElements) {
+        scope.filters["start"] = scope.filters["start"] + pageSize;
+        search();
+    }
 }

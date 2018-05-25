@@ -57,7 +57,22 @@ func getOwnerByID(ownerID int) owner {
 }
 
 func getOwners(dniType string, dni string, firstName string, lastName string, email string, start uint, limit uint) []owner {
-	q := db
+	q := buildOwnerQuery(dniType, dni, firstName, lastName, email)
+	var owners []owner
+	q.Offset(start).Limit(limit).Find(&owners)
+	return owners
+}
+
+func getOwnerCount(dniType string, dni string, firstName string, lastName string, email string) int {
+	q := buildOwnerQuery(dniType, dni, firstName, lastName, email)
+	row := q.Select("COUNT(id)").Row()
+	var count int
+	row.Scan(&count)
+	return count
+}
+
+func buildOwnerQuery(dniType string, dni string, firstName string, lastName string, email string) *gorm.DB {
+	q := db.Model(&owner{})
 	if strings.Trim(dniType, " ") != "" {
 		q = q.Where("dni_type = ?", dniType)
 	}
@@ -73,7 +88,5 @@ func getOwners(dniType string, dni string, firstName string, lastName string, em
 	if strings.Trim(email, " ") != "" {
 		q = q.Where("email = ?", email)
 	}
-	var owners []owner
-	q.Offset(start).Limit(limit).Find(&owners)
-	return owners
+	return q
 }

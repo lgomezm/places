@@ -44,7 +44,7 @@ func getPlacesBy(placeType string, thePurpose string,
 	minArea float32, maxArea float32, minPrice int64,
 	maxPrice int64, rooms uint, floor uint,
 	location string, start uint, limit uint, populatePhotos bool) []place {
-	q := buildQuery(placeType, thePurpose, minArea, maxArea, minPrice, maxPrice, rooms, floor, location, start, limit)
+	q := buildPlaceQuery(placeType, thePurpose, minArea, maxArea, minPrice, maxPrice, rooms, floor, location, start, limit)
 	var places []place
 	q.Limit(limit).Offset(start).Order("id DESC").Select(`DISTINCT id, name, description, type, area, floor, 
 		bedrooms, bathrooms, stratum, parking, location, latitude, longitude, owner_id`).Scan(&places)
@@ -66,14 +66,14 @@ func countPlaces(placeType string, thePurpose string,
 	minArea float32, maxArea float32, minPrice int64,
 	maxPrice int64, rooms uint, floor uint,
 	location string, start uint, limit uint) int {
-	q := buildQuery(placeType, thePurpose, minArea, maxArea, minPrice, maxPrice, rooms, floor, location, start, limit)
+	q := buildPlaceQuery(placeType, thePurpose, minArea, maxArea, minPrice, maxPrice, rooms, floor, location, start, limit)
 	row := q.Select("COUNT(DISTINCT id)").Row()
 	var count int
 	row.Scan(&count)
 	return count
 }
 
-func buildQuery(placeType string, thePurpose string,
+func buildPlaceQuery(placeType string, thePurpose string,
 	minArea float32, maxArea float32, minPrice int64,
 	maxPrice int64, rooms uint, floor uint,
 	location string, start uint, limit uint) *gorm.DB {

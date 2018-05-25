@@ -24,7 +24,11 @@ func listOwners(c *gin.Context) {
 		return
 	}
 	owners := getOwners(dniType, dni, firstName, lastName, email, uint(start), uint(limit))
-	c.JSON(http.StatusOK, owners)
+	count := getOwnerCount(dniType, dni, firstName, lastName, email)
+	rs := make(map[string]interface{})
+	rs["owners"] = owners
+	rs["total"] = count
+	c.JSON(http.StatusOK, rs)
 }
 
 func getOwner(c *gin.Context) {
