@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -28,9 +29,10 @@ func getPlaces(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Param 'start' should be a positive number"})
 		return
 	}
+	populatePhotos := strings.EqualFold("true", c.Query("populatePhotos"))
 	ps := getPlacesBy(placeType, purpose, minArea,
 		maxArea, minPrice, maxPrice, rooms, floor,
-		location, uint(start), uint(limit))
+		location, uint(start), uint(limit), populatePhotos)
 	count := countPlaces(placeType, purpose, minArea,
 		maxArea, minPrice, maxPrice, rooms, floor,
 		location, uint(start), uint(limit))

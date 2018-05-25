@@ -52,7 +52,8 @@ app.controller('HomeController', function($scope, $http, $location) {
             method: 'GET',
             url: '../places',
             params: {
-                limit: 5,
+                populatePhotos: true,
+                limit: 15,
                 start: 0
             }
           }).then(function successCallback(response) {
@@ -124,6 +125,7 @@ app.controller('PlaceSearchController', function($scope, $http, $location) {
             maxArea: getTextValue($("#maxArea")),
             minPrice: getTextValue($("#minPrice")),
             maxPrice: getTextValue($("#maxPrice")),
+            populatePhotos: true,
             limit: pageSize,
             start: 0
         };

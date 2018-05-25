@@ -43,18 +43,21 @@ type photo struct {
 func getPlacesBy(placeType string, thePurpose string,
 	minArea float32, maxArea float32, minPrice int64,
 	maxPrice int64, rooms uint, floor uint,
-	location string, start uint, limit uint) []place {
+	location string, start uint, limit uint, populatePhotos bool) []place {
 	q := buildQuery(placeType, thePurpose, minArea, maxArea, minPrice, maxPrice, rooms, floor, location, start, limit)
 	var places []place
-	q.Limit(limit).Offset(start).Select(`DISTINCT id, name, description, type, area, floor, 
+	q.Limit(limit).Offset(start).Order("id DESC").Select(`DISTINCT id, name, description, type, area, floor, 
 		bedrooms, bathrooms, stratum, parking, location, latitude, longitude, owner_id`).Scan(&places)
 	purposes := getPurposesOf(places, thePurpose, minPrice, maxPrice)
-	m := make(map[uint][]purpose)
-	for _, p := range purposes {
-		m[p.PlaceID] = append(m[p.PlaceID], p)
+	var photos map[uint][]photo
+	if populatePhotos {
+		photos = getPhotosOf(places)
+	} else {
+		photos = make(map[uint][]photo)
 	}
 	for i := 0; i < len(places); i++ {
-		places[i].Purposes = m[places[i].ID]
+		places[i].Purposes = purposes[places[i].ID]
+		places[i].Photos = photos[places[i].ID]
 	}
 	return places
 }
@@ -115,7 +118,7 @@ func buildQuery(placeType string, thePurpose string,
 }
 
 func getPurposesOf(places []place, thePurpose string,
-	minPrice int64, maxPrice int64) []purpose {
+	minPrice int64, maxPrice int64) map[uint][]purpose {
 	q := db
 	if strings.Trim(thePurpose, " ") != "" {
 		q = q.Where("purpose = ?", thePurpose)
@@ -132,7 +135,25 @@ func getPurposesOf(places []place, thePurpose string,
 	}
 	var purposes []purpose
 	q.Where("place_id in (?)", ids).Find(&purposes)
-	return purposes
+	m := make(map[uint][]purpose)
+	for _, p := range purposes {
+		m[p.PlaceID] = append(m[p.PlaceID], p)
+	}
+	return m
+}
+
+func getPhotosOf(places []place) map[uint][]photo {
+	var ids []uint
+	for _, p := range places {
+		ids = append(ids, p.ID)
+	}
+	var photos []photo
+	db.Where("place_id in (?)", ids).Find(&photos)
+	m := make(map[uint][]photo)
+	for _, p := range photos {
+		m[p.PlaceID] = append(m[p.PlaceID], p)
+	}
+	return m
 }
 
 func getPlaceByID(placeID int) place {

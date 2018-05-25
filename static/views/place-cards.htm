@@ -1,7 +1,8 @@
 <div class="row" ng-repeat="row in places">
     <div class="col-sm-4" ng-repeat="p in row">
         <div class="card mb-4 box-shadow">
-            <a ng-click="showPlace(p.ID)"><img src="house.jpg" class="card-img-top" alt="..."></a>
+            <a ng-click="showPlace(p.ID)" ng-show="p.photos && p.photos.length > 0"><img ng-src="{{p.photos[0].url}}" class="card-img-top" alt="..."></a>
+            <a ng-click="showPlace(p.ID)" ng-show="!p.photos || p.photos.length == 0"><img src="house.jpg" class="card-img-top" alt="..."></a>
             <div class="card-body">
                 <p class="h3 float-right">
                     <span class="badge badge-success">{{ p.area }} m<sup>2</sup></span>
