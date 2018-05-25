@@ -52,7 +52,7 @@ app.controller('HomeController', function($scope, $http, $location) {
             method: 'GET',
             url: '../places',
             params: {
-                limit: 15,
+                limit: 5,
                 start: 0
             }
           }).then(function successCallback(response) {
@@ -66,7 +66,7 @@ app.controller('HomeController', function($scope, $http, $location) {
     };
     $scope.goToSearch = function() {
         $location.path("/places/" + id);f
-    }
+    };
     $scope.list();
 });
 app.controller('PlaceDetailController', function($scope, $resource, $location) {
@@ -86,37 +86,48 @@ app.controller('PlaceDetailController', function($scope, $resource, $location) {
     $scope.show(getCurrentObjectId($location));
 });
 app.controller('PlaceSearchController', function($scope, $http, $location) {
-    $scope.search = function() {
-        var purposeParam = getDropdownValue($("#purpose"), "all");
-        var typeParam = getDropdownValue($("#type"), "all");
-        var locationParam = getDropdownValue($("#location"), "all");
-        var roomsParam = getDropdownValue($("#rooms"), "all");
-        var floorParam = getDropdownValue($("#floor"), "all");
-        var minAreaParam = getTextValue($("#minArea"));
-        var maxAreaParam = getTextValue($("#maxArea"));
-        var minPriceParam = getTextValue($("#minPrice"));
-        var maxPriceParam = getTextValue($("#maxPrice"));
+    var pageSize = 5;
+    search = function() {
         $http({
             method: 'GET',
             url: '../places',
-            params: {
-                purpose: purposeParam,
-                type: typeParam,
-                location: locationParam,
-                rooms: roomsParam,
-                floor: floorParam,
-                minArea: minAreaParam,
-                maxArea: maxAreaParam,
-                minPrice: minPriceParam,
-                maxPrice: maxPriceParam,
-                limit: 15,
-                start: 0
-            }
+            params: $scope.filters
           }).then(function successCallback(response) {
+              $scope.totalPages = Math.ceil(response.data.total / pageSize);
+              $scope.currPage = parseInt($scope.filters["start"] / pageSize, 10) + 1;
+              $scope.totalPlaces = response.data.total;
               setPlacesToScope($scope, response.data.places);
           }, function errorCallback(response) {
               alert(error.data);
           });
+    };
+    $scope.prevPage = function() {
+        if ($scope.filters["start"] > 0) {
+            $scope.filters["start"] = $scope.filters["start"] - pageSize;
+            search();
+        }
+    };
+    $scope.nextPage = function() {
+        if ($scope.filters["start"] + pageSize < $scope.totalPlaces) {
+            $scope.filters["start"] = $scope.filters["start"] + pageSize;
+            search();
+        }
+    };
+    $scope.newSearch = function() {
+        $scope.filters = {
+            purpose: getDropdownValue($("#purpose"), "all"),
+            type: getDropdownValue($("#type"), "all"),
+            location: getDropdownValue($("#location"), "all"),
+            rooms: getDropdownValue($("#rooms"), "all"),
+            floor: getDropdownValue($("#floor"), "all"),
+            minArea: getTextValue($("#minArea")),
+            maxArea: getTextValue($("#maxArea")),
+            minPrice: getTextValue($("#minPrice")),
+            maxPrice: getTextValue($("#maxPrice")),
+            limit: pageSize,
+            start: 0
+        };
+        search();
     };
     $scope.showPlace = function(id) {
         $location.path("/places/" + id);

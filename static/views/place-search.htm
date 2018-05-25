@@ -46,6 +46,7 @@
             <div class="form-group col-sm-2">
                 <label for="rooms">Habitaciones</label>
                 <select class="form-control" id="rooms">
+                    <option value="0">0+</option>
                     <option value="1">1+</option>
                     <option value="2">2+</option>
                     <option value="3">3+</option>
@@ -82,10 +83,22 @@
                 <input type="number" class="form-control" id="maxPrice" placeholder="Precio máximo">
             </div>
             <div class="col-sm-2">
-                <button type="button" class="btn btn-primary" ng-click="search()">Buscar</button>
+                <button type="button" class="btn btn-primary" ng-click="newSearch()">Buscar</button>
             </div>
         </div>
     </form>
+    <div class="row" style="margin-bottom: 20px" ng-show="totalPages">
+        <div class="col-sm-9">Resultados de búsqueda: {{ totalPlaces }}</div>
+        <div class="col-sm-3" style="float: right">
+            <button type="button" class="btn btn-secondary" aria-label="Left Align" ng-click="prevPage()" title="Anterior">
+                <span class="fas fa-caret-left" aria-hidden="true"></span>
+            </button>
+            <span class="text">Página {{ currPage }} de {{ totalPages }}</span>
+            <button type="button" class="btn btn-secondary" aria-label="Left Align" ng-click="nextPage()" title="Siguiente">
+                <span class="fas fa-caret-right" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
     <div class="album py-5 bg-light">
         <div ng-include="'views/place-cards.htm'"></div>
     </div>
