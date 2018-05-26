@@ -1,16 +1,16 @@
 <div ng-include="'views/user-navbar.htm'"></div>
-<div ng-controller="PlaceDetailController" class="container">
+<div ng-controller="PlaceDetailController" class="container" style="margin-top: 70px">
     <div class="card">
         <div class="container-fliud">
             <div class="wrapper row">
-                <div class="preview col-md-6">
+                <div class="preview col-md-8">
                     <div id="placeCarousel" class="carousel slide" data-ride="carousel">
                         <ol class="carousel-indicators">
                             <li data-target="#placeCarousel" ng-repeat="photo in place.photos" data-slide-to="$index" class="$index  == 0 ? 'active' : ''"></li>
                         </ol>
                         <div class="carousel-inner">
                             <div class="carousel-item" ng-repeat="photo in place.photos" ng-class="{'active': $index == 0}">
-                                <img class="d-block w-100" ng-src="{{photo.url}}">
+                                <img class="d-block stretch" ng-src="{{photo.url}}" height="500">
                             </div>
                         </div>
                         <a class="carousel-control-prev" ng-click="prevPhoto()" role="button" data-slide="prev">
@@ -23,12 +23,89 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <p class="h3">{{ place.name }}</p>
-                    <p class="text">{{ place.description }}</p>
-                    <p class="h4">Área: {{ place.area }} m<sup>2</sup></p>
+                <div class="col-md-4">
+                    <div class="container" style="margin-top: 50px;">
+                        <div class="row">
+                            <h2 style="text-align: center">¿Te interesa este inmueble?</h3>
+                            <h2 style="text-align: center">¿Qué esperas para contactarnos?</h3>
+                        </div>
+                        <div class="row contactinfo" style="margin-top: 50px;">
+                            <table>
+                                <tr>
+                                    <td style="width: 30px;"><span class="h3 fas fa-phone-square" aria-hidden="true"></span></td>
+                                    <td><p class="h3"> 555 5555</p></td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 100px;"><span class="h3 fas fa-mobile-alt" aria-hidden="true"></span></td>
+                                    <td><p class="h3"> 313 610 2966</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="h3 fab fa-whatsapp-square" aria-hidden="true"></span></td>
+                                    <td><p class="h3"> 313 610 2966</p></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="container" style="margin-top: 30px;">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>{{ place.name }}</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-8">
+                <p class="text">{{ place.description }}</p>
+            </div>
+            <div class="col-sm-4">
+                <h4>
+                    <span class="badge badge-primary" ng-repeat="pr in place.purposes | filter : {'purpose' : 'rent'}">
+                        Arriendo: {{ pr.price | currency:undefined:0 }}/mes
+                    </span>
+                </h4>
+                <h4>
+                    <span class="badge badge-success" ng-repeat="pr in place.purposes | filter : {'purpose' : 'sale'}">
+                            Venta: {{ pr.price | currency:undefined:0 }}
+                    </span>
+                </h4>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 30px;">
+            <div class="col-sm-4">
+                <span class="h5 fas fa-expand-arrows-alt"></span>
+                <span class="h5"> Área:</span>
+                <span class="text">{{ place.area }} m<sup>2</sup></span>
+            </div>
+            <div class="col-sm-4">
+                <span class="h5 fas fa-sort-numeric-up"></span>
+                <span class="h5"> Piso:</span>
+                <span class="text">{{ place.floor }}</span>
+            </div>
+            <div class="col-sm-4">
+                <span class="h5 fas fa-home"></span>
+                <span class="h5"> Estrato:</span>
+                <span class="text"> {{ place.stratum }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            <span class="h5 fas fa-bed"></span>
+            <span class="h5"> Habitaciones:</span>
+            <span class="text"> {{ place.bedrooms }}</span>
+        </div>
+        <div class="col-sm-4">
+            <span class="h5 fas fa-bath"></span>
+            <span class="h5"> Baños:</span>
+            <span class="text"> {{ place.bathrooms }}</span>
+        </div>
+        <div class="col-sm-4">
+            <span class="h5 fas fa-car"></span>
+            <span class="h5"> Parqueaderos:</span>
+            <span class="text"> {{ place.parking }}</span>
         </div>
     </div>
 </div>

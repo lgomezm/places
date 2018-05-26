@@ -40,10 +40,11 @@ app.config(function($routeProvider) {
         templateUrl: 'views/place-search.htm'
     })
     .when('/login', {
-        templateUrl: 'views/login.htm'
+        templateUrl: "views/login.htm"
     })
     .when('/admin', {
-        templateUrl: 'views/admin.htm'
+        templateUrl : "views/place-list.htm",
+        controller: "ListPlacesController"
     })
     .when("/admin/places", {
         templateUrl : "views/place-list.htm",
@@ -79,7 +80,13 @@ app.controller('PlaceDetailController', function($scope, $resource, $location) {
     var Place = $resource("../places/:id", {id: '@id'}, {});
     $scope.show = function(theId){
         Place.get({id: theId}, function(data){
-            $scope.place = data;
+            var place = data;
+            if (!place.photos || place.photos.length == 0) {
+                place.photos = [
+                    { url: "house.jpg" }
+                ];
+            }
+            $scope.place = place;
         });
     };
     $scope.prevPhoto = function() {

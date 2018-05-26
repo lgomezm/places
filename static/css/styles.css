@@ -50,3 +50,20 @@
   background: transparent;
   margin-bottom: 0rem !important;
 }
+
+.carousel-inner{
+  height: 500px;
+}
+
+.stretch {
+  width:100%;
+  height:550px;
+}
+
+.contactinfo{
+  height: auto;
+  width: inherit;
+  margin:10px;
+  text-align: center;
+  vertical-align:middle;
+}

@@ -79,7 +79,7 @@ func buildPlaceQuery(placeType string, thePurpose string,
 	minArea float32, maxArea float32, minPrice int64,
 	maxPrice int64, rooms uint, floor uint, location string,
 	status string) *gorm.DB {
-	q := db.Model(&place{}).Where("status = ?", status)
+	q := db.Model(&place{})
 	purposeQry := []string{}
 	var values []interface{}
 	if strings.Trim(thePurpose, " ") != "" {
