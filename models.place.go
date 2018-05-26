@@ -6,6 +6,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+const available = "available"
+
 type place struct {
 	gorm.Model
 	Name        string    `json:"name" gorm:"not null"`
@@ -21,7 +23,8 @@ type place struct {
 	Latitude    float64   `json:"latitude"`
 	Longitude   float64   `json:"longitude"`
 	Address     string    `json:"address"`
-	Purposes    []purpose `json:"purposes" gorm:"auto_preload"`
+	Status      string    `json:"status"`
+	Purposes    []purpose `json:"purposes"`
 	Photos      []photo   `json:"photos"`
 	OwnerID     uint      `json:"owner_id"`
 	Owner       owner     `json:"-"`
@@ -43,11 +46,11 @@ type photo struct {
 func getPlacesBy(placeType string, thePurpose string,
 	minArea float32, maxArea float32, minPrice int64,
 	maxPrice int64, rooms uint, floor uint,
-	location string, start uint, limit uint, populatePhotos bool) []place {
-	q := buildPlaceQuery(placeType, thePurpose, minArea, maxArea, minPrice, maxPrice, rooms, floor, location, start, limit)
+	location string, status string, start uint, limit uint, populatePhotos bool) []place {
+	q := buildPlaceQuery(placeType, thePurpose, minArea, maxArea, minPrice, maxPrice, rooms, floor, location, status)
 	var places []place
 	q.Limit(limit).Offset(start).Order("id DESC").Select(`DISTINCT id, name, description, type, area, floor, 
-		bedrooms, bathrooms, stratum, parking, location, latitude, longitude, owner_id`).Scan(&places)
+		bedrooms, bathrooms, stratum, parking, location, latitude, longitude, address, status, owner_id`).Scan(&places)
 	purposes := getPurposesOf(places, thePurpose, minPrice, maxPrice)
 	var photos map[uint][]photo
 	if populatePhotos {
@@ -64,9 +67,8 @@ func getPlacesBy(placeType string, thePurpose string,
 
 func countPlaces(placeType string, thePurpose string,
 	minArea float32, maxArea float32, minPrice int64,
-	maxPrice int64, rooms uint, floor uint,
-	location string, start uint, limit uint) int {
-	q := buildPlaceQuery(placeType, thePurpose, minArea, maxArea, minPrice, maxPrice, rooms, floor, location, start, limit)
+	maxPrice int64, rooms uint, floor uint, location string, status string) int {
+	q := buildPlaceQuery(placeType, thePurpose, minArea, maxArea, minPrice, maxPrice, rooms, floor, location, status)
 	row := q.Select("COUNT(DISTINCT id)").Row()
 	var count int
 	row.Scan(&count)
@@ -75,9 +77,9 @@ func countPlaces(placeType string, thePurpose string,
 
 func buildPlaceQuery(placeType string, thePurpose string,
 	minArea float32, maxArea float32, minPrice int64,
-	maxPrice int64, rooms uint, floor uint,
-	location string, start uint, limit uint) *gorm.DB {
-	q := db.Model(&place{})
+	maxPrice int64, rooms uint, floor uint, location string,
+	status string) *gorm.DB {
+	q := db.Model(&place{}).Where("status = ?", status)
 	purposeQry := []string{}
 	var values []interface{}
 	if strings.Trim(thePurpose, " ") != "" {
@@ -95,6 +97,9 @@ func buildPlaceQuery(placeType string, thePurpose string,
 	if len(purposeQry) != 0 {
 		c := strings.Join(purposeQry, " AND ")
 		q = q.Joins("JOIN purposes ON places.id = purposes.place_id").Where(c, values...)
+	}
+	if strings.Trim(status, " ") != "" {
+		q = q.Where("places.status = ?", status)
 	}
 	if strings.Trim(placeType, " ") != "" {
 		q = q.Where("places.type = ?", placeType)
@@ -169,6 +174,13 @@ func createPlace(p place) place {
 
 func updatePlace(p place) place {
 	tx := db.Begin()
+	tx.Where("place_id = ?", p.ID).Delete(purpose{})
+	if len(p.Purposes) > 0 {
+		for _, pr := range p.Purposes {
+			pr.PlaceID = p.ID
+			tx.Create(&pr)
+		}
+	}
 	tx.Model(&p).Updates(
 		place{
 			Name:        p.Name,
@@ -184,15 +196,9 @@ func updatePlace(p place) place {
 			Latitude:    p.Latitude,
 			Longitude:   p.Longitude,
 			Address:     p.Address,
+			Status:      p.Status,
 			OwnerID:     p.OwnerID,
 		})
-	if len(p.Purposes) > 0 {
-		tx.Where("place_id = ?", p.ID).Delete(purpose{})
-		for _, pr := range p.Purposes {
-			pr.PlaceID = p.ID
-			tx.Create(&pr)
-		}
-	}
 	tx.Commit()
 	return p
 }

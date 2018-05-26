@@ -1,6 +1,6 @@
 <div ng-include="'views/admin-navbar.htm'"></div>
-<div ng-controller="ShowPlaceController" class="container" style="margin-top: 20px">
-    <div class="row" style="margin-bottom: 20px">
+<div ng-controller="ShowPlaceController" class="container" style="margin-top: 70px">
+    <div class="row">
         <div class="col-sm-11">
             <p class="h3">Detalles del inmueble</p>
         </div>
@@ -8,7 +8,7 @@
             <button type="button" class="btn btn-primary" ng-click="goToEdit()">Editar</button>
         </div>
     </div>
-    <div class="row">
+    <div class="row" style="margin-top: 20px">
         <div class="col-sm-2">
             <p class="h5">Nombre</p>
         </div>
@@ -20,6 +20,14 @@
         </div>
         <div class="col-sm-4">
             <p class="text">{{ place.type | placeTypeFormat }}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-2">
+            <p class="h5">Estado</p>
+        </div>
+        <div class="col-sm-4">
+            <p class="text">{{ place.status | placeStatusFormat }}</p>
         </div>
     </div>
     <div class="row">
@@ -88,7 +96,7 @@
             <p class="text">{{ place.address }}</p>
         </div>
     </div>
-    <div class="row">
+    <div class="row" style="margin-top: 20px">
         <div class="custom-file col-sm-5">
             <input type="file" class="custom-file-input" id="photoFile">
             <label class="custom-file-label" for="photoFile">Agregar imagen</label>

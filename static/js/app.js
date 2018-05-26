@@ -57,6 +57,7 @@ app.controller('HomeController', function($scope, $http, $location) {
             url: '../places',
             params: {
                 populatePhotos: true,
+                status: "available",
                 limit: 15,
                 start: 0
             }
@@ -123,6 +124,7 @@ app.controller('PlaceSearchController', function($scope, $http, $location) {
             maxArea: getTextValue($("#maxArea")),
             minPrice: getTextValue($("#minPrice")),
             maxPrice: getTextValue($("#maxPrice")),
+            status: "available",
             populatePhotos: true,
             limit: pageSize,
             start: 0
@@ -258,6 +260,7 @@ app.controller('UpdatePlaceController', function($scope, $http, $location, $reso
             place = data;
             $("#placeName").val(place.name);
             $("#type").val(place.type);
+            $("#status").val(place.status);
             $("#placeDesc").val(place.description);
             $("#location").val(place.location);
             $("#address").val(place.address);
@@ -272,9 +275,11 @@ app.controller('UpdatePlaceController', function($scope, $http, $location, $reso
                     if (purpose.purpose === "rent") {
                         $("#rentCheckbox").prop('checked', true);
                         $("#rentPrice").val(purpose.price);
+                        $("#rentPrice").prop('readonly', false);
                     } else if (purpose.purpose === "sale") {
                         $("#saleCheckbox").prop('checked', true);
                         $("#salePrice").val(purpose.price);
+                        $("#salePrice").prop('readonly', false);
                     }
                 });
             }
@@ -500,6 +505,19 @@ app.filter('dniTypeFormat', function() {
         }
     };
 });
+app.filter('placeStatusFormat', function() {
+    return function(x) {
+        if (x === "available") {
+            return "Disponible";
+        } else if (x === "occupied") {
+            return "Ocupado";
+        } else if (x === "sold") {
+            return "Vendido";
+        } else {
+            return "-";
+        }
+    };
+});
 
 function getTextValue(textInput) {
     if (!textInput.val().trim()) {
@@ -658,6 +676,9 @@ function processPlace(http, location, ownerId, placeId) {
         return;
     }
     if (!readValueToObject(place, "type", "type", "dropdown")) {
+        return;
+    }
+    if (!readValueToObject(place, "status", "status", "dropdown")) {
         return;
     }
     if (!readValueToObject(place, "description", "placeDesc", "text")) {

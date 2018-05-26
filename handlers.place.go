@@ -19,6 +19,7 @@ func getPlaces(c *gin.Context) {
 	rooms := toUInt(c.Query("rooms"))
 	floor := toUInt(c.Query("floor"))
 	location := c.Query("location")
+	status := c.Query("status")
 	limit, err := strconv.ParseUint(c.Query("limit"), 10, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Param 'limit' should be a positive number"})
@@ -32,10 +33,10 @@ func getPlaces(c *gin.Context) {
 	populatePhotos := strings.EqualFold("true", c.Query("populatePhotos"))
 	ps := getPlacesBy(placeType, purpose, minArea,
 		maxArea, minPrice, maxPrice, rooms, floor,
-		location, uint(start), uint(limit), populatePhotos)
+		location, status, uint(start), uint(limit), populatePhotos)
 	count := countPlaces(placeType, purpose, minArea,
 		maxArea, minPrice, maxPrice, rooms, floor,
-		location, uint(start), uint(limit))
+		location, status)
 	session := sessions.Default(c)
 	if !isUserLoggedIn(session) {
 		for i := 0; i < len(ps); i++ {
