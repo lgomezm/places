@@ -60,6 +60,11 @@
   height:550px;
 }
 
+.stretch-card {
+  width:100%;
+  height:200px;
+}
+
 .contactinfo{
   height: auto;
   width: inherit;
