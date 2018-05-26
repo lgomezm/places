@@ -7,32 +7,32 @@ app.config(function($routeProvider) {
     .when("/places", {
         templateUrl : "views/home.htm"
     })
-    .when('/owners/:ownerId/places/create', {
+    .when('/admin/owners/:ownerId/places/create', {
         templateUrl: 'views/place-create.htm',
         controller: "CreatePlaceController"
     })
-    .when('/owners/:ownerId/places/show/:placeId', {
+    .when('/admin/owners/:ownerId/places/show/:placeId', {
         templateUrl: 'views/place-show.htm'
     })
-    .when('/owners/:ownerId/places/update/:placeId', {
+    .when('/admin/owners/:ownerId/places/update/:placeId', {
         templateUrl: 'views/place-create.htm',
         controller: "UpdatePlaceController"
     })
     .when('/places/:placeId', {
         templateUrl: 'views/place-detail.htm'
     })
-    .when("/owners", {
+    .when("/admin/owners", {
         templateUrl : "views/owner-list.htm",
         controller: "ListOwnersController"
     })
-    .when("/owners/create", {
+    .when("/admin/owners/create", {
         templateUrl : "views/owner-create.htm",
         controller: "CreateOwnerController"
     })
-    .when("/owners/show/:ownerId", {
+    .when("/admin/owners/show/:ownerId", {
         templateUrl : "views/owner-show.htm"
     })
-    .when("/owners/update/:ownerId", {
+    .when("/admin/owners/update/:ownerId", {
         templateUrl : "views/owner-create.htm",
         controller: "UpdateOwnerController"
     })
@@ -70,7 +70,7 @@ app.controller('HomeController', function($scope, $http, $location) {
         $location.path("/places/" + id);
     };
     $scope.goToSearch = function() {
-        $location.path("/places/" + id);f
+        $location.path("/search");
     };
     $scope.list();
 });
@@ -203,7 +203,7 @@ app.controller('ShowPlaceController', function($scope, $http, $resource, $locati
         });
     };
     $scope.goToEdit = function() {
-        $location.path("/owners/" + $scope.ownerId + "/places/update/" + $scope.placeId);
+        $location.path("/admin/owners/" + $scope.ownerId + "/places/update/" + $scope.placeId);
     };
     $('#photoFile').on('change', function() {
         var file = this.files[0];
@@ -312,10 +312,10 @@ app.controller('ShowOwnerController', function($scope, $http, $resource, $locati
             $location.path("/login");
         });
     $scope.goToEdit = function() {
-        $location.path("/owners/update/" + $scope.ownerId);
+        $location.path("/admin/owners/update/" + $scope.ownerId);
     };
     $scope.goToNewPlace = function() {
-        $location.path("/owners/" + $scope.ownerId + "/places/create");
+        $location.path("/admin/owners/" + $scope.ownerId + "/places/create");
     };
     $scope.load = function() {
         Owner.get({id: $scope.ownerId}, function(data) {
@@ -374,10 +374,10 @@ app.controller('ListPlacesController', function($scope, $http, $location) {
           });
     };
     $scope.goToShow = function(ownerId, placeId) {
-        $location.path("/owners/" + ownerId + "/places/show/" + placeId);
+        $location.path("/admin/owners/" + ownerId + "/places/show/" + placeId);
     };
     $scope.goToEdit = function(ownerId, placeId) {
-        $location.path("/owners/" + ownerId + "/places/update/" + placeId);
+        $location.path("/admin/owners/" + ownerId + "/places/update/" + placeId);
     };
     $scope.prevPage = function() {
         prevPage($scope, search, pageSize);
@@ -419,10 +419,10 @@ app.controller('ListOwnersController', function($scope, $http, $location) {
           });
     };
     $scope.goToShow = function(ownerId) {
-        $location.path("/owners/show/" + ownerId);
+        $location.path("/admin/owners/show/" + ownerId);
     };
     $scope.goToEdit = function(ownerId) {
-        $location.path("/owners/update/" + ownerId);
+        $location.path("/admin/owners/update/" + ownerId);
     };
     $scope.prevPage = function() {
         prevPage($scope, search, pageSize);
@@ -575,7 +575,7 @@ function getCurrentObjectId(location) {
 }
 
 function getOwnerId(location) {
-    var re = /\/owners\/(\d+)\/places\/(show|create|update)/;
+    var re = /\/admin\/owners\/(\d+)\/places\/(show|create|update)/;
     var myArray = re.exec(location.path());
     if (null == myArray || myArray.length < 2) {
         return -1;
@@ -646,7 +646,7 @@ function processOwner(http, location, ownerId) {
         };
     }
     http(config).then(function successCallback(response) {
-          location.path("/owners/show/" + response.data.ID);
+          location.path("/admin/owners/show/" + response.data.ID);
       }, function errorCallback(response) {
           alert(response.data);
       });
@@ -717,7 +717,7 @@ function processPlace(http, location, ownerId, placeId) {
         };
     }
     http(config).then(function successCallback(response) {
-          location.path("/owners/" + ownerId + "/places/show/" + response.data.ID);
+          location.path("/admin/owners/" + ownerId + "/places/show/" + response.data.ID);
       }, function errorCallback(response) {
           alert(response.data);
       });
