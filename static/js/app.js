@@ -386,7 +386,7 @@ app.controller('UpdateOwnerController', function($scope, $rootScope, $http, $loc
     };
 });
 app.controller('ListPlacesController', function($scope, $rootScope, $http, $location) {
-    var pageSize = 5;
+    var pageSize = 20;
     isLoggedIn($http,
         function(response) {
             $scope.newSearch();
@@ -437,7 +437,7 @@ app.controller('ListPlacesController', function($scope, $rootScope, $http, $loca
     };
 });
 app.controller('ListOwnersController', function($scope, $rootScope,$http, $location) {
-    var pageSize = 1;
+    var pageSize = 20;
     isLoggedIn($http,
         function(response) {
             $scope.newSearch();

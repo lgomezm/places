@@ -110,13 +110,18 @@
             <p class="text">{{ place.address }}</p>
         </div>
     </div>
-    <div class="row" style="margin-top: 20px">
+    <div class="row" style="margin-top: 30px">
+        <div class="col-sm-12">
+            <p class="h4">Fotografías del inmueble</p>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 30px">
         <div class="custom-file col-sm-5">
             <input type="file" class="custom-file-input" id="photoFile">
             <label class="custom-file-label" for="photoFile">Agregar imagen</label>
         </div>
     </div>
-    <div class="row" ng-repeat="row in photos">
+    <div class="row" ng-repeat="row in photos" style="margin-top: 30px">
         <div class="col-sm-4" ng-repeat="photo in row">
             <div class="photo">
                 <img class="d-block w-100 place-photo" ng-src="{{photo.url}}">
