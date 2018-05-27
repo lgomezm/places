@@ -1,6 +1,20 @@
 <div ng-include="'views/user-navbar.htm'"></div>
 <div class="container" style="margin-top: 70px">
     <div class="row justify-content-md-center">
+        <div ng-show="successLogout" class="col-md-auto alert alert-success alert-dismissible fade show" role="alert">
+            Has cerrado sesión exitosamente.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div ng-show="errorLogin" class="col-md-auto alert alert-danger alert-dismissible fade show" role="alert">
+            El nombre de usuario y/o contraseña son incorrectos.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+    <div class="row justify-content-md-center">
         <form>
         <div class="form-group col-md-auto">
             <p class="h2">Ingreso</p>    

@@ -6,6 +6,16 @@
             <button type="button" class="btn btn-primary btn-lg" ng-click="goToSearch()" style="float: right;">Buscar</button>
         </div>
     </section>
+    <div class="container">
+        <div class="row justify-content-md-center">
+            <div ng-show="hasError" class="col-md-auto alert alert-danger alert-dismissible fade show" role="alert">
+                Ocurrió un error consultando inmuebles.
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
     <div class="album py-5 bg-light">
         <div  class="container">
             <div ng-include="'views/place-cards.htm'"></div>

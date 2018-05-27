@@ -56,6 +56,7 @@ app.config(function($routeProvider) {
 });
 app.controller('HomeController', function($scope, $http, $location) {
     $scope.list = function(){
+        $scope.hasError = false;
         $http({
             method: 'GET',
             url: '../places',
@@ -68,7 +69,8 @@ app.controller('HomeController', function($scope, $http, $location) {
           }).then(function successCallback(response) {
               setPlacesToScope($scope, response.data.places);
           }, function errorCallback(response) {
-              alert(error.data);
+              console.log(response.data);
+              $scope.hasError = true;
           });
     };
     $scope.showPlace = function(id) {
@@ -102,8 +104,9 @@ app.controller('PlaceDetailController', function($scope, $resource, $location) {
     $scope.show(getCurrentObjectId($location));
 });
 app.controller('PlaceSearchController', function($scope, $http, $location) {
-    var pageSize = 5;
+    var pageSize = 15;
     search = function() {
+        $scope.hasError = false;
         $http({
             method: 'GET',
             url: '../places',
@@ -114,7 +117,8 @@ app.controller('PlaceSearchController', function($scope, $http, $location) {
               $scope.totalPlaces = response.data.total;
               setPlacesToScope($scope, response.data.places);
           }, function errorCallback(response) {
-              alert(error.data);
+              console.log(response.data);
+              $scope.hasError = true;
           });
     };
     $scope.prevPage = function() {
@@ -145,13 +149,15 @@ app.controller('PlaceSearchController', function($scope, $http, $location) {
         $location.path("/places/" + id);
     };
 });
-app.controller('LoginController', function($scope, $http, $location) {
+app.controller('LoginController', function($scope, $rootScope, $http, $location) {
     $("#password").keypress(function(event) {
         if (event.which == 13) {
             $scope.login();
         }
     });
     $scope.login = function() {
+        $scope.errorLogin = false;
+        $rootScope.successLogout = false;
         $http({
             method: 'POST',
             url: '../login',
@@ -162,12 +168,13 @@ app.controller('LoginController', function($scope, $http, $location) {
           }).then(function successCallback(response) {
               $location.path("/admin");
           }, function errorCallback(response) {
-              alert(response.data);
+              console.log(response.data);
+              $scope.errorLogin = true;
           });
     };
 });
 
-app.controller('CreatePlaceController', function($scope, $http, $location) {
+app.controller('CreatePlaceController', function($scope, $rootScope, $http, $location) {
     $scope.actionBtn = "Crear";
     isLoggedIn($http, 
         function(response) {
@@ -180,7 +187,7 @@ app.controller('CreatePlaceController', function($scope, $http, $location) {
         $location.path("/admin");
     }
     $scope.process = function() {
-        processPlace($http, $location, $scope.ownerId);
+        processPlace($http, $location, $scope, $rootScope, $scope.ownerId);
     };
     $('#saleCheckbox').change(function() {
         $("#salePrice").prop('readonly', !this.checked);
@@ -189,10 +196,10 @@ app.controller('CreatePlaceController', function($scope, $http, $location) {
         $("#rentPrice").prop('readonly', !this.checked);
     });
     $scope.logout = function() {
-        logout($http, $location);
+        logout($http, $location, $rootScope);
     };
 });
-app.controller('ShowPlaceController', function($scope, $http, $resource, $location) {
+app.controller('ShowPlaceController', function($scope, $rootScope, $http, $resource, $location) {
     var Place = $resource("../places/:id", {id: '@id'}, {});
     isLoggedIn($http,
         function(response) {
@@ -241,14 +248,15 @@ app.controller('ShowPlaceController', function($scope, $http, $resource, $locati
                 $scope.load($scope.placeId);
             }, 
             function errorCallback(response) {
-                alert(response.data);
+                console.log(response.data);
+                $scope.hasError = true;
             });
     };
     $scope.logout = function() {
-        logout($http, $location);
+        logout($http, $location, $rootScope);
     };
 });
-app.controller('UpdatePlaceController', function($scope, $http, $location, $resource) {
+app.controller('UpdatePlaceController', function($scope, $rootScope, $http, $location, $resource) {
     $scope.actionBtn = "Actualizar";
     var Place = $resource("../places/:id", {id: '@id'}, {});
     isLoggedIn($http, 
@@ -294,7 +302,7 @@ app.controller('UpdatePlaceController', function($scope, $http, $location, $reso
         });
     };
     $scope.process = function() {
-        processPlace($http, $location, $scope.ownerId, $scope.placeId);
+        processPlace($http, $location, $scope, $rootScope, $scope.ownerId, $scope.placeId);
     };
     $('#saleCheckbox').change(function() {
         $("#salePrice").prop('readonly', !this.checked);
@@ -303,10 +311,10 @@ app.controller('UpdatePlaceController', function($scope, $http, $location, $reso
         $("#rentPrice").prop('readonly', !this.checked);
     });
     $scope.logout = function() {
-        logout($http, $location);
+        logout($http, $location, $rootScope);
     };
 });
-app.controller('CreateOwnerController', function($scope, $http, $location) {
+app.controller('CreateOwnerController', function($scope, $rootScope, $http, $location) {
     $scope.actionBtn = "Crear";
     isLoggedIn($http,
         function(response) {}, 
@@ -314,13 +322,13 @@ app.controller('CreateOwnerController', function($scope, $http, $location) {
             $location.path("/login");
         });
     $scope.process = function() {
-        processOwner($http, $location);
+        processOwner($http, $location, $scope, $rootScope);
     };
     $scope.logout = function() {
-        logout($http, $location);
+        logout($http, $location, $rootScope);
     };
 });
-app.controller('ShowOwnerController', function($scope, $http, $resource, $location) {
+app.controller('ShowOwnerController', function($scope, $rootScope, $http, $resource, $location) {
     var Owner = $resource("../owners/:id", {id: '@id'}, {});
     isLoggedIn($http,
         function(response) {
@@ -342,10 +350,10 @@ app.controller('ShowOwnerController', function($scope, $http, $resource, $locati
         });
     };
     $scope.logout = function() {
-        logout($http, $location);
+        logout($http, $location, $rootScope);
     };
 });
-app.controller('UpdateOwnerController', function($scope, $http, $location, $resource) {
+app.controller('UpdateOwnerController', function($scope, $rootScope, $http, $location, $resource) {
     $scope.actionBtn = "Actualizar";
     var Owner = $resource("../owners/:id", {id: '@id'}, {});
     isLoggedIn($http,
@@ -371,20 +379,23 @@ app.controller('UpdateOwnerController', function($scope, $http, $location, $reso
         });
     };
     $scope.process = function() {
-        processOwner($http, $location, $scope.ownerId);
+        processOwner($http, $location, $scope, $rootScope, $scope.ownerId);
     };
     $scope.logout = function() {
-        logout($http, $location);
+        logout($http, $location, $rootScope);
     };
 });
-app.controller('ListPlacesController', function($scope, $http, $location) {
+app.controller('ListPlacesController', function($scope, $rootScope, $http, $location) {
     var pageSize = 5;
     isLoggedIn($http,
-        function(response) {}, 
+        function(response) {
+            $scope.newSearch();
+        }, 
         function(response) {
             $location.path("/login");
         });
     search = function() {
+        $scope.hasError = false;
         $http({
             method: 'GET',
             url: '../places',
@@ -395,7 +406,8 @@ app.controller('ListPlacesController', function($scope, $http, $location) {
               $scope.totalPages = Math.ceil(response.data.total / pageSize);
               $scope.totalPlaces = response.data.total;
           }, function errorCallback(response) {
-              alert(error.data);
+              console.log(response.data);
+              $scope.hasError = true;
           });
     };
     $scope.goToShow = function(ownerId, placeId) {
@@ -421,18 +433,20 @@ app.controller('ListPlacesController', function($scope, $http, $location) {
         search();
     };
     $scope.logout = function() {
-        logout($http, $location);
+        logout($http, $location, $rootScope);
     };
-    $scope.newSearch();
 });
-app.controller('ListOwnersController', function($scope, $http, $location) {
+app.controller('ListOwnersController', function($scope, $rootScope,$http, $location) {
     var pageSize = 1;
     isLoggedIn($http,
-        function(response) {}, 
+        function(response) {
+            $scope.newSearch();
+        }, 
         function(response) {
             $location.path("/login");
         });
     search = function() {
+        $scope.hasError = false;
         $http({
             method: 'GET',
             url: '../owners',
@@ -443,11 +457,12 @@ app.controller('ListOwnersController', function($scope, $http, $location) {
               $scope.totalPages = Math.ceil(response.data.total / pageSize);
               $scope.totalOwners = response.data.total;
           }, function errorCallback(response) {
-              alert(error.data);
+              console.log(response.data);
+              $scope.hasError = true;
           });
     };
     $scope.logout = function() {
-        logout($http, $location);
+        logout($http, $location, $rootScope);
     };
     $scope.goToShow = function(ownerId) {
         $location.path("/admin/owners/show/" + ownerId);
@@ -473,7 +488,6 @@ app.controller('ListOwnersController', function($scope, $http, $location) {
         };
         search();
     };
-    $scope.newSearch();
 });
 
 app.filter('accountTypeFormat', function() {
@@ -633,14 +647,16 @@ function isLoggedIn(http, successCallback, errorCallback) {
         .then(successCallback, errorCallback);
 }
 
-function logout(http, location) {
+function logout(http, location, rootScope) {
     http({
         method: 'POST',
         url: '../logout'
     }).then(function successCallback(response) {
+        rootScope.successLogout = true;
         location.path("/login");
     }, function errorCallback(response) {
-        alert(error.data);
+        console.log(response.data);
+        location.path("/login");
     });
 }
 
@@ -656,7 +672,7 @@ function addPurposeToPlace(place, purpose, priceField) {
     return true;
 }
 
-function processOwner(http, location, ownerId) {
+function processOwner(http, location, scope, rootScope, ownerId) {
     var owner = {};
     if (!readValueToObject(owner, "firstname", "firstname", "text")) {
         return;
@@ -701,13 +717,19 @@ function processOwner(http, location, ownerId) {
         };
     }
     http(config).then(function successCallback(response) {
-          location.path("/admin/owners/show/" + response.data.ID);
-      }, function errorCallback(response) {
-          alert(response.data);
-      });
+        if (ownerId != null) {
+            rootScope.successfulMessage = "Propietario actualizado exitosamente";
+        } else {
+            rootScope.successfulMessage = "Propietario creado exitosamente";
+        }
+        location.path("/admin/owners/show/" + response.data.ID);
+    }, function errorCallback(response) {
+        console.log(response.data);
+        scope.errorMessage = "No se pudo completar la operación";
+    });
 }
 
-function processPlace(http, location, ownerId, placeId) {
+function processPlace(http, location, scope, rootScope, ownerId, placeId) {
     var place = { owner_id: parseInt(ownerId) };
     if (!readValueToObject(place, "name", "placeName", "text")) {
         return;
@@ -775,10 +797,16 @@ function processPlace(http, location, ownerId, placeId) {
         };
     }
     http(config).then(function successCallback(response) {
-          location.path("/admin/owners/" + ownerId + "/places/show/" + response.data.ID);
-      }, function errorCallback(response) {
-          alert(response.data);
-      });
+        if (placeId != null) {
+            rootScope.successfulMessage = "Inmueble actualizado exitosamente";
+        } else {
+            rootScope.successfulMessage = "Inmueble creado exitosamente";
+        }
+        location.path("/admin/owners/" + ownerId + "/places/show/" + response.data.ID);
+    }, function errorCallback(response) {
+        console.log(response.data);
+        scope.errorMessage = "No se pudo completar la operación";
+    });
 }
 
 function prevPage(scope, search, pageSize) {
