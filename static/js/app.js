@@ -4,22 +4,26 @@ app.config(function($routeProvider) {
     .when("/", {
         templateUrl : "views/home.htm"
     })
+    .when('/search', {
+        templateUrl: 'views/place-search.htm'
+    })
     .when("/places", {
         templateUrl : "views/home.htm"
     })
-    .when('/admin/owners/:ownerId/places/create', {
-        templateUrl: 'views/place-create.htm',
-        controller: "CreatePlaceController"
-    })
-    .when('/admin/owners/:ownerId/places/show/:placeId', {
-        templateUrl: 'views/place-show.htm'
-    })
-    .when('/admin/owners/:ownerId/places/update/:placeId', {
-        templateUrl: 'views/place-create.htm',
-        controller: "UpdatePlaceController"
-    })
     .when('/places/:placeId', {
         templateUrl: 'views/place-detail.htm'
+    })
+    .when('/login', {
+        templateUrl: "views/login.htm",
+        controller: "LoginController"
+    })
+    .when('/admin', {
+        templateUrl : "views/place-list.htm",
+        controller: "ListPlacesController"
+    })
+    .when("/admin/places", {
+        templateUrl : "views/place-list.htm",
+        controller: "ListPlacesController"
     })
     .when("/admin/owners", {
         templateUrl : "views/owner-list.htm",
@@ -30,25 +34,24 @@ app.config(function($routeProvider) {
         controller: "CreateOwnerController"
     })
     .when("/admin/owners/show/:ownerId", {
-        templateUrl : "views/owner-show.htm"
+        templateUrl : "views/owner-show.htm",
+        controller: "ShowOwnerController"
     })
     .when("/admin/owners/update/:ownerId", {
         templateUrl : "views/owner-create.htm",
         controller: "UpdateOwnerController"
     })
-    .when('/search', {
-        templateUrl: 'views/place-search.htm'
+    .when('/admin/owners/:ownerId/places/create', {
+        templateUrl: 'views/place-create.htm',
+        controller: "CreatePlaceController"
     })
-    .when('/login', {
-        templateUrl: "views/login.htm"
+    .when('/admin/owners/:ownerId/places/show/:placeId', {
+        templateUrl: 'views/place-show.htm',
+        controller: "ShowPlaceController"
     })
-    .when('/admin', {
-        templateUrl : "views/place-list.htm",
-        controller: "ListPlacesController"
-    })
-    .when("/admin/places", {
-        templateUrl : "views/place-list.htm",
-        controller: "ListPlacesController"
+    .when('/admin/owners/:ownerId/places/update/:placeId', {
+        templateUrl: 'views/place-create.htm',
+        controller: "UpdatePlaceController"
     });
 });
 app.controller('HomeController', function($scope, $http, $location) {
@@ -164,14 +167,6 @@ app.controller('LoginController', function($scope, $http, $location) {
     };
 });
 
-app.controller('AdminController', function($scope, $http, $location) {
-    isLoggedIn($http, 
-        function(response) {},
-        function(response) {
-            $location.path("/login");
-        });
-});
-
 app.controller('CreatePlaceController', function($scope, $http, $location) {
     $scope.actionBtn = "Crear";
     isLoggedIn($http, 
@@ -193,6 +188,9 @@ app.controller('CreatePlaceController', function($scope, $http, $location) {
     $('#rentCheckbox').change(function() {
         $("#rentPrice").prop('readonly', !this.checked);
     });
+    $scope.logout = function() {
+        logout($http, $location);
+    };
 });
 app.controller('ShowPlaceController', function($scope, $http, $resource, $location) {
     var Place = $resource("../places/:id", {id: '@id'}, {});
@@ -245,6 +243,9 @@ app.controller('ShowPlaceController', function($scope, $http, $resource, $locati
             function errorCallback(response) {
                 alert(response.data);
             });
+    };
+    $scope.logout = function() {
+        logout($http, $location);
     };
 });
 app.controller('UpdatePlaceController', function($scope, $http, $location, $resource) {
@@ -301,6 +302,9 @@ app.controller('UpdatePlaceController', function($scope, $http, $location, $reso
     $('#rentCheckbox').change(function() {
         $("#rentPrice").prop('readonly', !this.checked);
     });
+    $scope.logout = function() {
+        logout($http, $location);
+    };
 });
 app.controller('CreateOwnerController', function($scope, $http, $location) {
     $scope.actionBtn = "Crear";
@@ -311,6 +315,9 @@ app.controller('CreateOwnerController', function($scope, $http, $location) {
         });
     $scope.process = function() {
         processOwner($http, $location);
+    };
+    $scope.logout = function() {
+        logout($http, $location);
     };
 });
 app.controller('ShowOwnerController', function($scope, $http, $resource, $location) {
@@ -333,6 +340,9 @@ app.controller('ShowOwnerController', function($scope, $http, $resource, $locati
         Owner.get({id: $scope.ownerId}, function(data) {
             $scope.owner = data;
         });
+    };
+    $scope.logout = function() {
+        logout($http, $location);
     };
 });
 app.controller('UpdateOwnerController', function($scope, $http, $location, $resource) {
@@ -362,6 +372,9 @@ app.controller('UpdateOwnerController', function($scope, $http, $location, $reso
     };
     $scope.process = function() {
         processOwner($http, $location, $scope.ownerId);
+    };
+    $scope.logout = function() {
+        logout($http, $location);
     };
 });
 app.controller('ListPlacesController', function($scope, $http, $location) {
@@ -407,6 +420,9 @@ app.controller('ListPlacesController', function($scope, $http, $location) {
         };
         search();
     };
+    $scope.logout = function() {
+        logout($http, $location);
+    };
     $scope.newSearch();
 });
 app.controller('ListOwnersController', function($scope, $http, $location) {
@@ -429,6 +445,9 @@ app.controller('ListOwnersController', function($scope, $http, $location) {
           }, function errorCallback(response) {
               alert(error.data);
           });
+    };
+    $scope.logout = function() {
+        logout($http, $location);
     };
     $scope.goToShow = function(ownerId) {
         $location.path("/admin/owners/show/" + ownerId);
@@ -612,7 +631,18 @@ function getOwnerId(location) {
 function isLoggedIn(http, successCallback, errorCallback) {
     http.get('../logged-in')
         .then(successCallback, errorCallback);
-};
+}
+
+function logout(http, location) {
+    http({
+        method: 'POST',
+        url: '../logout'
+    }).then(function successCallback(response) {
+        location.path("/login");
+    }, function errorCallback(response) {
+        alert(error.data);
+    });
+}
 
 function addPurposeToPlace(place, purpose, priceField) {
     var price = getTextValue($("#" + priceField));

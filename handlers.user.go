@@ -56,26 +56,26 @@ func login(c *gin.Context) {
 
 func isLoggedIn(c *gin.Context) {
 	session := sessions.Default(c)
-	user := session.Get("user")
-	if user == nil {
-		c.Status(http.StatusUnauthorized)
-	} else {
+	if isUserLoggedIn(session) {
 		c.Status(http.StatusOK)
+	} else {
+		c.Status(http.StatusUnauthorized)
 	}
 }
 
 func logout(c *gin.Context) {
 	session := sessions.Default(c)
 	if isUserLoggedIn(session) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
-	} else {
 		session.Delete("user")
 		session.Save()
 		c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
 	}
 }
 
 func isUserLoggedIn(session sessions.Session) bool {
 	user := session.Get("user")
+	fmt.Println("The user is", user)
 	return user != nil
 }
