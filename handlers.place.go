@@ -98,10 +98,18 @@ func postPlace(c *gin.Context) {
 }
 
 func putPlace(c *gin.Context) {
-	var p place
-	c.BindJSON(&p)
-	p = updatePlace(p)
-	c.JSON(http.StatusOK, p)
+	if placeID, err := strconv.Atoi(c.Param("place_id")); err == nil {
+		var p place
+		c.BindJSON(&p)
+		if p.ID == uint(placeID) {
+			p = updatePlace(p)
+			c.JSON(http.StatusOK, p)
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Path id and place id must match"})
+		}
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Place id should be a number"})
+	}
 }
 
 func deletePlace(c *gin.Context) {
@@ -110,9 +118,9 @@ func deletePlace(c *gin.Context) {
 		if deleted {
 			c.String(http.StatusNoContent, "")
 		} else {
-			c.AbortWithStatus(http.StatusNotFound)
+			c.JSON(http.StatusNotFound, gin.H{"error": "Can't find place to delete"})
 		}
 	} else {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Place id should be a number"})
 	}
 }

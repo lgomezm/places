@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -34,16 +35,19 @@ func createPlacePhoto(c *gin.Context) {
 	}
 	s, err := session.NewSession(&aws.Config{Region: aws.String("us-east-2")})
 	if err != nil {
+		log.Println("Could not create S3 session", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Can't create S3 session"})
 		return
 	}
 	n, err := uuid.NewV4()
 	if err != nil {
+		log.Println("Could not create UUID for file id (weird):", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Can't create file name"})
 		return
 	}
 	m, err := uploadToS3(s, n.String(), f)
 	if err != nil {
+		log.Println("Could not upload file to S3:", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not upload file"})
 		return
 	}
@@ -98,8 +102,10 @@ func deletePlacePhoto(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Can't find photo"})
 		return
 	}
+	log.Println("Deleting file from S3", p)
 	s, err := session.NewSession(&aws.Config{Region: aws.String("us-east-2")})
 	if err != nil {
+		log.Println("Could not create S3 session", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Can't create S3 session"})
 		return
 	}
@@ -109,6 +115,7 @@ func deletePlacePhoto(c *gin.Context) {
 		Key:    aws.String(p.S3Key),
 	})
 	if err != nil {
+		log.Println("Could not delete S3 object", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Can't delete object from S3"})
 		return
 	}
@@ -117,6 +124,7 @@ func deletePlacePhoto(c *gin.Context) {
 		Key:    aws.String(p.S3Key),
 	})
 	if err != nil {
+		log.Println("Could not wait until file is deleted from S3", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Can't wait until file is deleted"})
 		return
 	}

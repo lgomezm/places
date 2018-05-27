@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -23,6 +24,8 @@ func postUser(c *gin.Context) {
 			c.AbortWithStatus(http.StatusInternalServerError)
 		}
 	} else {
+		log.Println("Could not generate digest from password", u.Password)
+		log.Println("Error at generating password", err.Error())
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
 }

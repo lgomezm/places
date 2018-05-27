@@ -16,7 +16,7 @@ func main() {
 	var err error
 	db, err = gorm.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
-		panic("failed to connect database")
+		panic("Failed to connect database")
 	}
 	defer db.Close()
 

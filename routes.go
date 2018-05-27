@@ -16,32 +16,24 @@ func initializeRoutes() {
 
 	router.GET("/places", getPlaces)
 	router.GET("/places/:place_id", getPlace)
-	router.POST("/places", postPlace)
-	router.PUT("/places/:place_id", putPlace)
-	router.DELETE("/places/:place_id", deletePlace)
-	router.POST("/places/:place_id/photos", createPlacePhoto)
-	router.DELETE("/places/:place_id/photos/:photo_id", deletePlacePhoto)
 
-	router.GET("/owners", listOwners)
-	router.GET("/owners/:owner_id", getOwner)
-	router.POST("/owners", postOwner)
-	router.PUT("/owners/:owner_id", putOwner)
-	router.DELETE("/owners/:owner_id", deleteOwner)
+	places := router.Group("/places")
+	places.Use(authRequired)
+	places.POST("/", postPlace)
+	places.PUT("/:place_id", putPlace)
+	places.DELETE("/:place_id", deletePlace)
+	places.POST("/:place_id/photos", createPlacePhoto)
+	places.DELETE("/:place_id/photos/:photo_id", deletePlacePhoto)
 
-	private := router.Group("/private")
-	private.Use(authRequired)
-	private.GET("/", private1)
-	private.GET("/two", private2)
+	owners := router.Group("/owners")
+	owners.Use(authRequired)
+	owners.GET("/", listOwners)
+	owners.GET("/:owner_id", getOwner)
+	owners.POST("/", postOwner)
+	owners.PUT("/:owner_id", putOwner)
+	owners.DELETE("/:owner_id", deleteOwner)
 }
 
 func index(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, "static/index.html")
-}
-
-func private1(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"hello": "user"})
-}
-
-func private2(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"hello": "Logged in user"})
 }

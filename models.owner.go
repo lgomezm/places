@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"log"
 	"strings"
 
 	"github.com/jinzhu/gorm"
@@ -22,6 +23,7 @@ type owner struct {
 
 func createOwner(o owner) (owner, error) {
 	if err := db.Create(&o).Error; err != nil {
+		log.Println("Could not create owner", err.Error())
 		return o, errors.New("Could not create owner")
 	}
 	return o, nil

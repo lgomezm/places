@@ -76,7 +76,7 @@ func deleteOwner(c *gin.Context) {
 		if deleted {
 			c.String(http.StatusNoContent, "")
 		} else {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Can't find owner"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Can't find owner to delete"})
 		}
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Owner id should be a number"})
