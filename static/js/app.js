@@ -112,7 +112,7 @@ app.controller('PlaceDetailController', function($scope, $resource, $location) {
         if (event.keyCode === 27) {
             $scope.showImage = false;
             $scope.$apply();
-        } else if (event.keyCode == 37) {
+        } else if (event.keyCode == 37) { // Show next image
             if ($scope.currPhotoIdx === 0) {
                 $scope.currPhotoIdx = $scope.place.photos.length - 1;
             } else {
@@ -120,7 +120,7 @@ app.controller('PlaceDetailController', function($scope, $resource, $location) {
             }
             $scope.selectedImage = $scope.place.photos[$scope.currPhotoIdx].url;
             $scope.$apply();
-        } else if (event.keyCode == 39) {
+        } else if (event.keyCode == 39) { // Show previous image
             if ($scope.currPhotoIdx === $scope.place.photos.length - 1) {
                 $scope.currPhotoIdx = 0
             } else {
@@ -132,7 +132,6 @@ app.controller('PlaceDetailController', function($scope, $resource, $location) {
     });
     $scope.hello = function() {
         $scope.showImage = false;
-        $scope.$apply();
     }
     $("#placeCarousel").carousel();
     $scope.show(getCurrentObjectId($location));
@@ -255,12 +254,15 @@ app.controller('ShowPlaceController', function($scope, $rootScope, $http, $resou
     };
     $('#photoFile').on('change', function() {
         var file = this.files[0];
-        /*if (file.size > 1024) {
-            alert('max upload size is 1k');
+        if (file.size > 1024 * 1024) {
+            alert('El tamaño máximo de la imagen es 1MB');
             return;
-        }*/
+        }
+        if (file.type !== "image/jpeg" && file.type !== "image/png") {
+            alert('Las imágenes deben ser en formato JPG o PNG');
+            return;
+        }
         $scope.uploadPhoto(file);
-        // Also see .name, .type
     });
     $scope.uploadPhoto = function(file) {
         var fd = new FormData();
