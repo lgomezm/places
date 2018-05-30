@@ -1,5 +1,9 @@
 <div ng-include="'views/user-navbar.htm'"></div>
 <div ng-controller="PlaceDetailController" class="container" style="margin-top: 70px">
+    <div id="fullScreenImage" tabindex="0" class="fullScreenImage" ng-show="showImage === true;">
+        <h3 title="Cerrar"><span ng-click="hello()" class="far fa-times-circle" style="float: right; z-index: 101; margin-top: 70px; margin-right: 20px;"></span>  </h3>
+        <img id="fullScreenImage2" ng-src="{{selectedImage}}">
+    </div>
     <div class="card">
         <div class="container-fliud">
             <div class="wrapper row">
@@ -10,7 +14,7 @@
                         </ol>
                         <div class="carousel-inner">
                             <div class="carousel-item" ng-repeat="photo in place.photos" ng-class="{'active': $index == 0}">
-                                <img class="d-block stretch" ng-src="{{photo.url}}" height="500">
+                                <img class="d-block stretch" ng-src="{{photo.url}}" ng-click="showPhoto($index)" height="500">
                             </div>
                         </div>
                         <a class="carousel-control-prev" ng-click="prevPhoto()" role="button" data-slide="prev">

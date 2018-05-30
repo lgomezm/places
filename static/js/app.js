@@ -82,6 +82,8 @@ app.controller('HomeController', function($scope, $http, $location) {
     $scope.list();
 });
 app.controller('PlaceDetailController', function($scope, $resource, $location) {
+    $scope.showImage = false;
+    $scope.currPhotoIdx = -1;
     var Place = $resource("../places/:id", {id: '@id'}, {});
     $scope.show = function(theId){
         Place.get({id: theId}, function(data){
@@ -100,6 +102,38 @@ app.controller('PlaceDetailController', function($scope, $resource, $location) {
     $scope.nextPhoto = function() {
         $("#placeCarousel").carousel('next');
     };
+    $scope.showPhoto = function(idx) {
+        $scope.showImage = true;
+        $scope.currPhotoIdx = idx;
+        $scope.selectedImage = $scope.place.photos[idx].url;
+    };
+    $(document).keyup(function(event) {
+        // Hide image when ESC is clicked!
+        if (event.keyCode === 27) {
+            $scope.showImage = false;
+            $scope.$apply();
+        } else if (event.keyCode == 37) {
+            if ($scope.currPhotoIdx === 0) {
+                $scope.currPhotoIdx = $scope.place.photos.length - 1;
+            } else {
+                $scope.currPhotoIdx = $scope.currPhotoIdx - 1;
+            }
+            $scope.selectedImage = $scope.place.photos[$scope.currPhotoIdx].url;
+            $scope.$apply();
+        } else if (event.keyCode == 39) {
+            if ($scope.currPhotoIdx === $scope.place.photos.length - 1) {
+                $scope.currPhotoIdx = 0
+            } else {
+                $scope.currPhotoIdx = $scope.currPhotoIdx + 1;
+            }
+            $scope.selectedImage = $scope.place.photos[$scope.currPhotoIdx].url;
+            $scope.$apply();
+        }
+    });
+    $scope.hello = function() {
+        $scope.showImage = false;
+        $scope.$apply();
+    }
     $("#placeCarousel").carousel();
     $scope.show(getCurrentObjectId($location));
 });
@@ -463,6 +497,9 @@ app.controller('ListOwnersController', function($scope, $rootScope,$http, $locat
     };
     $scope.logout = function() {
         logout($http, $location, $rootScope);
+    };
+    $scope.goToNew = function(ownerId) {
+        $location.path("/admin/owners/create");
     };
     $scope.goToShow = function(ownerId) {
         $location.path("/admin/owners/show/" + ownerId);
