@@ -1,8 +1,27 @@
 <div ng-include="'views/user-navbar.htm'"></div>
 <div ng-controller="PlaceDetailController" class="container" style="margin-top: 70px">
-    <div tabindex="0" class="container fullScreenImage" ng-show="showImage === true;">
+    <div class="fullScreenImage" ng-show="showImage === true;">
         <h3 title="Cerrar"><span ng-click="hello()" class="far fa-times-circle" style="float: right; z-index: 101; margin-top: 70px; margin-right: 20px;"></span>  </h3>
-        <img ng-src="{{selectedImage}}">
+        <div class="container" style="margin-left: 0px; margin-right: 0px;">
+            <div id="fullScreenCarousel" class="carousel carousel-fs slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#fullScreenCarousel" ng-repeat="photo in place.photos" data-slide-to="$index" class="$index  == 0 ? 'active' : ''"></li>
+                </ol>
+                <div class="carousel-inner carousel-inner-fs">
+                    <div class="carousel-item carousel-item-fs" ng-repeat="photo in place.photos" ng-class="{'active': $index == 0}">
+                        <img class="d-block stretch-fs" ng-src="{{photo.url}}" ng-click="showPhoto($index)">
+                    </div>
+                </div>
+                <a class="carousel-control-prev" ng-click="prevPhoto('fullScreenCarousel')" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" ng-click="nextPhoto('fullScreenCarousel')" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+        </div>
     </div>
     <div class="card">
         <div class="container-fliud">
@@ -12,16 +31,16 @@
                         <ol class="carousel-indicators">
                             <li data-target="#placeCarousel" ng-repeat="photo in place.photos" data-slide-to="$index" class="$index  == 0 ? 'active' : ''"></li>
                         </ol>
-                        <div class="carousel-inner">
+                        <div class="carousel-inner detail-carousel-inner">
                             <div class="carousel-item" ng-repeat="photo in place.photos" ng-class="{'active': $index == 0}">
                                 <img class="d-block stretch" ng-src="{{photo.url}}" ng-click="showPhoto($index)" height="500">
                             </div>
                         </div>
-                        <a class="carousel-control-prev" ng-click="prevPhoto()" role="button" data-slide="prev">
+                        <a class="carousel-control-prev" ng-click="prevPhoto('placeCarousel')" role="button" data-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span class="sr-only">Previous</span>
                         </a>
-                        <a class="carousel-control-next" ng-click="nextPhoto()" role="button" data-slide="next">
+                        <a class="carousel-control-next" ng-click="nextPhoto('placeCarousel')" role="button" data-slide="next">
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="sr-only">Next</span>
                         </a>

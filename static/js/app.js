@@ -52,7 +52,10 @@ app.config(function($routeProvider) {
     .when('/admin/owners/:ownerId/places/update/:placeId', {
         templateUrl: 'views/place-create.htm',
         controller: "UpdatePlaceController"
-    });
+    })
+    .when('/about-us', {
+        templateUrl: 'views/about-us.htm'
+    });;
 });
 app.controller('HomeController', function($scope, $http, $location) {
     $scope.list = function(){
@@ -96,11 +99,11 @@ app.controller('PlaceDetailController', function($scope, $resource, $location) {
             $scope.place = place;
         });
     };
-    $scope.prevPhoto = function() {
-        $("#placeCarousel").carousel('prev');
+    $scope.prevPhoto = function(carouselId) {
+        $("#" + carouselId).carousel('prev');
     };
-    $scope.nextPhoto = function() {
-        $("#placeCarousel").carousel('next');
+    $scope.nextPhoto = function(carouselId) {
+        $("#" + carouselId).carousel('next');
     };
     $scope.showPhoto = function(idx) {
         $scope.showImage = true;
