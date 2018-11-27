@@ -12,6 +12,8 @@ func initializeRoutes() {
 	router.GET("/logged-in", isLoggedIn)
 	router.POST("/logout", logout)
 
+	router.GET("/hello", hello)
+
 	router.POST("/users", postUser)
 
 	router.GET("/places", getPlaces)
@@ -36,4 +38,10 @@ func initializeRoutes() {
 
 func index(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, "static/index.html")
+}
+
+func hello(c *gin.Context) {
+	m := make(map[string]string)
+	m["message"] = "Hello world!"
+	c.JSON(http.StatusOK, m)
 }
